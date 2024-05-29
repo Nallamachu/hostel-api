@@ -1,7 +1,9 @@
 package com.msrts.hostel.service;
 
+import com.msrts.hostel.constant.Role;
 import com.msrts.hostel.model.AuthenticationRequest;
 import com.msrts.hostel.model.AuthenticationResponse;
+import com.msrts.hostel.model.RefreshToken;
 import com.msrts.hostel.model.RegisterRequest;
 import com.msrts.hostel.entity.Token;
 import com.msrts.hostel.repository.ReferralSequenceRepository;
@@ -14,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +36,9 @@ public class AuthenticationService {
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
+
+  @Value("${application.security.jwt.refresh-token.expiration}")
+  private long refreshExpiration;
 
   @Autowired
   private final ReferralSequenceRepository hostelSequenceRepository;
@@ -46,7 +53,7 @@ public class AuthenticationService {
         .lastname(request.getLastname())
         .email(request.getEmail())
         .password(passwordEncoder.encode(request.getPassword()))
-        .role(request.getRole())
+        .role((request.getRole()!=null) ? request.getRole(): Role.USER)
         .referralCode(generateSequence(request, currentSequence))
         .referredByCode(request.getReferredByCode())
         .points(100)
@@ -134,7 +141,8 @@ public class AuthenticationService {
         saveUserToken(user, accessToken);
         var authResponse = AuthenticationResponse.builder()
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
+                .refreshToken(new RefreshToken(1,user.getEmail(),refreshToken,2,
+                        new Date(System.currentTimeMillis() + refreshExpiration)))
                 .build();
         new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
       }

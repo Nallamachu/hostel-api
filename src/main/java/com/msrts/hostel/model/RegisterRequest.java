@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterRequest {
-
   private String firstname;
   private String lastname;
   private String email;
@@ -20,6 +19,6 @@ public class RegisterRequest {
   private String mobile;
   private String referralCode;
   private String referredByCode;
-  private Address address;
+  private AddressDto address;
   private Role role;
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.msrts.hostel.constant.Role;
 import com.msrts.hostel.entity.Address;
+import com.msrts.hostel.model.AddressDto;
 import com.msrts.hostel.model.RegisterRequest;
 import com.msrts.hostel.service.AuthenticationService;
 import org.springframework.boot.CommandLineRunner;
@@ -35,13 +36,13 @@ public class HostelManagementApplication {
     @Bean
     public CommandLineRunner commandLineRunner(AuthenticationService service) {
         return args -> {
-            Address address = new Address(
-                    null, "YSR","India","516227","Andhra Pradesh", "Rikshaw Colony Road"
+            AddressDto address = new AddressDto(
+                    null, "YSR","India","516227","Andhra Pradesh", 516227l
             );
             var admin = RegisterRequest.builder()
                     .firstname("Admin")
                     .lastname("Admin")
-                    .email("admin@mail.com")
+                    .email("admin@msrts.com")
                     .password("password")
                     .address(address)
                     .role(Role.ADMIN)
@@ -51,7 +52,7 @@ public class HostelManagementApplication {
             var manager = RegisterRequest.builder()
                     .firstname("Admin")
                     .lastname("Admin")
-                    .email("manager@mail.com")
+                    .email("manager@msrts.com")
                     .password("password")
                     .address(address)
                     .role(Role.MANAGER)

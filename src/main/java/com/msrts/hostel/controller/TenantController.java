@@ -17,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/v1/tenant")
+@CrossOrigin
 public class TenantController {
     @Autowired
     private TenantService tenantService;

@@ -18,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/v1/expense")
+@CrossOrigin
 public class ExpenseController {
 
     @Autowired

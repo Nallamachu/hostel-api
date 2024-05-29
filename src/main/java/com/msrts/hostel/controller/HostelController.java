@@ -18,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/hostel")
 @RequiredArgsConstructor
+@CrossOrigin
 public class HostelController {
     @Autowired
     private HostelService hostelService;

@@ -1,5 +1,6 @@
 package com.msrts.hostel.service;
 
+import com.msrts.hostel.model.RefreshToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -45,10 +46,15 @@ public class JwtService {
     return buildToken(extraClaims, userDetails, jwtExpiration);
   }
 
-  public String generateRefreshToken(
+  public RefreshToken generateRefreshToken(
       UserDetails userDetails
   ) {
-    return buildToken(new HashMap<>(), userDetails, refreshExpiration);
+    return new RefreshToken(
+            1,
+            userDetails.getUsername(),
+            buildToken(new HashMap<>(), userDetails, refreshExpiration),
+            2,
+            new Date(System.currentTimeMillis() + refreshExpiration));
   }
 
   private String buildToken(
