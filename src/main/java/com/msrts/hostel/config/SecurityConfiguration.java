@@ -13,6 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static com.msrts.hostel.constant.Permission.ADMIN_CREATE;
 import static com.msrts.hostel.constant.Permission.ADMIN_DELETE;
@@ -37,6 +39,11 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfiguration {
 
     private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**",
+            "/api/v1/hostel/**",
+            "/api/v1/room/**",
+            "/api/v1/tenant/**",
+            "/api/v1/expense/**",
+            "/api/v1/payment]/**",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
@@ -82,4 +89,18 @@ public class SecurityConfiguration {
 
         return http.build();
     }
+
+    /*@Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins("*") // Replace with your Angular app URL
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allowed HTTP methods
+                        .allowedHeaders("*") // Allowed request headers (you can customize this based on your requirements)
+                        .allowCredentials(true);
+            }
+        };
+    }*/
 }

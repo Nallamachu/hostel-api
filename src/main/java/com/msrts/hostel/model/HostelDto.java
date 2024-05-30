@@ -1,6 +1,5 @@
 package com.msrts.hostel.model;
 
-import com.msrts.hostel.entity.Address;
 import com.msrts.hostel.entity.Room;
 import com.msrts.hostel.entity.User;
 import jakarta.validation.constraints.NotBlank;
@@ -24,7 +23,7 @@ public class HostelDto {
     private boolean isActive;
     private Set<Room> rooms;
     @NotNull(message = "Hostel address should be not null")
-    private Address address;
+    private AddressDto address;
     @NotNull(message = "Hostel owner should be not null")
     private User owner;
 }

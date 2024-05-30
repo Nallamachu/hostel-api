@@ -1,6 +1,7 @@
 package com.msrts.hostel.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.msrts.hostel.entity.Address;
 import com.msrts.hostel.entity.Hostel;
 import com.msrts.hostel.entity.User;
 import com.msrts.hostel.exception.ErrorConstants;
@@ -74,7 +75,7 @@ public class HostelService {
             hostel.setActive(hostelDto.isActive());
             hostel.setRooms(hostelDto.getRooms());
             hostel.setOwner(hostelDto.getOwner());
-            hostel.setAddress(hostelDto.getAddress());
+            hostel.setAddress(objectMapper.convertValue(hostelDto.getAddress(), Address.class));
             hostel = hostelRepository.save(hostel);
             hostelDto = objectMapper.convertValue(hostel, HostelDto.class);
             response.setData(hostelDto);

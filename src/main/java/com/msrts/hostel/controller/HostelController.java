@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/hostel")
 @RequiredArgsConstructor
-@CrossOrigin
+@CrossOrigin(exposedHeaders="Access-Control-Allow-Origin")
 public class HostelController {
     @Autowired
     private HostelService hostelService;
@@ -27,7 +27,7 @@ public class HostelController {
     public Response<List<HostelDto>> getAllHostelsByUserId(@RequestParam Integer userId,
                                                 @RequestParam(defaultValue = "0") int page,
                                                 @RequestParam(defaultValue = "10") int size,
-                                                @RequestParam(defaultValue = "id,desc") String[] sort) {
+                                                @RequestParam(defaultValue = "id") String[] sort) {
         Response<List<HostelDto>> response = new Response<>();
         Pageable pagingSort = PageRequest.of(page, size, Sort.by(sort));
         if (userId == 0 || userId < 0) {
