@@ -6,14 +6,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
-    @Query(value = "from Payment p where p.tenant=?1")
+    @Query(value = "from Payment p where p.tenant.id=?1")
     List<Payment> findAllByTenantId(Long tenantId, Pageable pageable);
 
-    @Query(value = "select p.* from Payment p join Tenant t on p.tenant=t.id and t.id in (?1) and t.isActive = true and p.date between ?2 and ?3", nativeQuery = true)
-    List<Payment> findAllPaymentsByTenantIdsAndTimePeriod(List<Long> tenantIds, String startDate, String endDate, Pageable pageable);
+    @Query(value = "from Payment p where p.tenant.id in (?1) and p.startDate between ?2 and ?3")
+    List<Payment> findAllPaymentsByTenantIdsAndTimePeriod(List<Long> tenantIds, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 }

@@ -28,7 +28,7 @@ public class PaymentController {
     public Response<List<PaymentDto>> getAllPaymentsByTenantId(@RequestParam(required = true) Long tenantId,
                                                            @RequestParam(defaultValue = "0") int page,
                                                            @RequestParam(defaultValue = "10") int size,
-                                                           @RequestParam(defaultValue = "id,desc") String[] sort) {
+                                                           @RequestParam(defaultValue = "id") String[] sort) {
         Response<List<PaymentDto>> response = new Response<>();
         Pageable pagingSort = PageRequest.of(page, size, Sort.by(sort));
         if (tenantId == 0 || tenantId < 0) {
@@ -54,7 +54,7 @@ public class PaymentController {
                                                                             @RequestParam(defaultValue = "CURRENT_MONTH",required = true) String timePeriod,
                                                                             @RequestParam(defaultValue = "0") int page,
                                                                             @RequestParam(defaultValue = "10") int size,
-                                                                            @RequestParam(defaultValue = "id,desc") String[] sort) {
+                                                                            @RequestParam(defaultValue = "id") String[] sort) {
         Response<List<PaymentDto>> response = new Response<>();
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
         if (hostelId == 0 || hostelId < 0) {

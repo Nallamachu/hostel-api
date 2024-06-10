@@ -14,9 +14,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,36 +71,35 @@ public class PaymentService {
     @Transactional
     public Response<List<PaymentDto>> getPaymentsByHostelIdAndTimePeriod(Long hostelId, String timePeriod, Response<List<PaymentDto>> response, Pageable pageable) {
         try {
-            DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate now = LocalDate.now();
             List<Payment> payments = null;
             Response<List<TenantDto>> tenantResponse = tenantService.getAllActiveTenantsByHostelId(hostelId,null, new Response<>());
-            if(!tenantResponse.getErrors().isEmpty()){
+            if(tenantResponse.getErrors() != null){
                 response.setErrors(tenantResponse.getErrors());
                 return response;
             }
             List<Long> tenantIds = tenantResponse.getData().stream().map(TenantDto::getId).toList();
 
             if(!tenantIds.isEmpty() && timePeriod.equalsIgnoreCase(ErrorConstants.TIME_PERIOD_LAST_MONTH)){
-                String startDate = now.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth()).format(format);
-                String endDate = now.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()).format(format);
+                YearMonth yearMonth = YearMonth.now().minusMonths(1);
+                System.out.println(LocalDateTime.of(yearMonth.getYear(), yearMonth.getMonth(), yearMonth.atEndOfMonth().getDayOfMonth(), 23, 59, 59));
                 payments = paymentRepository.findAllPaymentsByTenantIdsAndTimePeriod(
                         tenantIds,
-                        startDate,
-                        endDate,
+                        LocalDateTime.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), 1, 0, 0, 0),
+                        LocalDateTime.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), yearMonth.atEndOfMonth().getDayOfMonth(), 23, 59, 59),
                         pageable);
             } else if(!tenantIds.isEmpty() && timePeriod.equalsIgnoreCase(ErrorConstants.TIME_PERIOD_CURRENT_MONTH)) {
-                String startDate = now.with(TemporalAdjusters.firstDayOfMonth()).format(format);
+                YearMonth yearMonth = YearMonth.now();
+                System.out.println(LocalDateTime.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), yearMonth.atEndOfMonth().getDayOfMonth(), 23, 59, 59));
                 payments = paymentRepository.findAllPaymentsByTenantIdsAndTimePeriod(
                         tenantIds,
-                        startDate,
-                        now.format(format),
+                        LocalDateTime.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), 1, 0, 0, 0),
+                        LocalDateTime.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), yearMonth.atEndOfMonth().getDayOfMonth(), 23, 59, 59),
                         pageable);
             } else {
                 response.setErrors(List.of(new Error("INVALID_TIME_PERIOD", ErrorConstants.INVALID_TIME_PERIOD)));
             }
 
-            if(payments != null) {
+            if(payments != null && payments.size() > 0) {
                 List<PaymentDto> paymentDtos = payments.stream().map(expense -> objectMapper.convertValue(expense, PaymentDto.class)).toList();
                 response.setData(paymentDtos);
             }

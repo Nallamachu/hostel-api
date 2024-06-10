@@ -40,7 +40,7 @@ public class ExpenseController {
     public Response<List<ExpenseDto>> getAllExpensesByHostelId(@RequestParam(required = true) Long hostelId,
                                                            @RequestParam(defaultValue = "0") int page,
                                                            @RequestParam(defaultValue = "10") int size,
-                                                           @RequestParam(defaultValue = "id,desc") String[] sort) {
+                                                           @RequestParam(defaultValue = "id") String[] sort) {
         Response<List<ExpenseDto>> response = new Response<>();
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
         if (hostelId == 0 || hostelId < 0) {
@@ -57,7 +57,7 @@ public class ExpenseController {
                                                                @RequestParam(defaultValue = "CURRENT_MONTH",required = true) String timePeriod,
                                                                @RequestParam(defaultValue = "0") int page,
                                                                @RequestParam(defaultValue = "10") int size,
-                                                               @RequestParam(defaultValue = "id,desc") String[] sort) {
+                                                               @RequestParam(defaultValue = "id") String[] sort) {
         Response<List<ExpenseDto>> response = new Response<>();
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
         if (hostelId == 0 || hostelId < 0) {
