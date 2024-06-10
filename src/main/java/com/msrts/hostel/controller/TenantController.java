@@ -70,7 +70,7 @@ public class TenantController {
                 :tenantService.getTenantsByGovernmentIdNumber(idNumber, response,pageable);
     }
 
-    @PutMapping(path = "/modify-room/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/modify-tenant/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Response<TenantDto> modifyTenant(@PathVariable("id") Long id, @RequestBody TenantDto tenantDto) {
         Response<TenantDto> response = new Response<>();
         if(id == null || tenantDto == null) {
