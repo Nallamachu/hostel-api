@@ -14,15 +14,15 @@ import io.swagger.v3.oas.annotations.servers.Server;
         info = @Info(
                 contact = @Contact(
                         name = "Admin",
-                        email = "contact@msrts.com",
-                        url = "https://nallamachu.github.io/msts/"
+                        email = "admin@msrts.com",
+                        url = "https://nallamachu.github.io/msrts/"
                 ),
-                description = "OpenApi documentation for Referral Spring Security",
-                title = "OpenApi specification - Referral Ripple",
+                description = "OpenApi documentation for Hostel Management Application",
+                title = "OpenApi specification - Hostel Management",
                 version = "1.0",
                 license = @License(
                         name = "Licence name",
-                        url = "https://some-url.com"
+                        url = "https://nallamachu.github.io/msrts/"
                 ),
                 termsOfService = "Terms of service"
         ),
@@ -33,7 +33,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
                 ),
                 @Server(
                         description = "PROD ENV",
-                        url = "https://nallamachu.github.io/msts/"
+                        url = "https://nallamachu.github.io/msrts/"
                 )
         },
         security = {
