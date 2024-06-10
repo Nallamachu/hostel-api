@@ -9,7 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.util.Set;
 
 @Entity
-@Table
+@Table(name = "hostel")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,7 +23,11 @@ public class Hostel {
     private String type;
     private boolean isActive;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "hostel")
+    @OneToMany(fetch = FetchType.LAZY,
+            targetEntity = Room.class,
+            mappedBy = "hostel",
+            cascade = CascadeType.ALL
+    )
     private Set<Room> rooms;
 
     @OneToOne(
@@ -35,4 +39,8 @@ public class Hostel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User owner;
+
+    public Hostel(Long id) {
+        this.id = id;
+    }
 }

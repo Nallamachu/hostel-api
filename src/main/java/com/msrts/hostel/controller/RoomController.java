@@ -5,6 +5,7 @@ import com.msrts.hostel.model.Error;
 import com.msrts.hostel.model.Response;
 import com.msrts.hostel.model.RoomDto;
 import com.msrts.hostel.service.RoomService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +17,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/v1/room")
-@CrossOrigin
+@RequiredArgsConstructor
+@CrossOrigin(exposedHeaders="Access-Control-Allow-Origin")
 public class RoomController {
     @Autowired
     private RoomService roomService;
@@ -25,12 +27,11 @@ public class RoomController {
     public Response<List<RoomDto>> getAllRoomsByHostelId(@RequestParam(required = true) Long hostelId,
                                                                @RequestParam(defaultValue = "0") int page,
                                                                @RequestParam(defaultValue = "10") int size,
-                                                               @RequestParam(defaultValue = "id,desc") String[] sort) {
+                                                               @RequestParam(defaultValue = "id") String[] sort) {
         Response<List<RoomDto>> response = new Response<>();
         Pageable pagingSort = PageRequest.of(page, size, Sort.by(sort));
         if (hostelId == 0 || hostelId < 0) {
-            Error error = new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID);
-            response.setErrors(List.of(error));
+            response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID)));
             return response;
         }
         return roomService.findAllRoomsByHostelId(hostelId, response, pagingSort);

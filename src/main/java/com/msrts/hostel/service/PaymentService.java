@@ -60,7 +60,7 @@ public class PaymentService {
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate now = LocalDate.now();
         List<Payment> payments = null;
-        Response<List<TenantDto>> tenantResponse = tenantService.getAllActiveTenantsByHostelId(hostelId, new Response<>());
+        Response<List<TenantDto>> tenantResponse = tenantService.getAllActiveTenantsByHostelId(hostelId,null, new Response<>());
         if(!tenantResponse.getErrors().isEmpty()){
             response.setErrors(tenantResponse.getErrors());
             return response;

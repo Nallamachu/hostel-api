@@ -1,5 +1,7 @@
 package com.msrts.hostel.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.msrts.hostel.constant.Role;
 import jakarta.persistence.*;
 
@@ -20,7 +22,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "_user")
+@Table(name = "user",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "username"),
+                @UniqueConstraint(columnNames = "email"),
+                @UniqueConstraint(columnNames = "mobile")
+        })
 @EntityListeners(AuditingEntityListener.class)
 public class User implements UserDetails {
 
@@ -30,6 +37,8 @@ public class User implements UserDetails {
   private String firstname;
   private String lastname;
   private String email;
+  private String username;
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String password;
   private String mobile;
   private String referralCode;
@@ -38,12 +47,6 @@ public class User implements UserDetails {
 
   @Enumerated(EnumType.STRING)
   private Role role;
-
-  @OneToMany(mappedBy = "user")
-  private List<Token> tokens;
-
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
-  private Set<Hostel> hostels;
 
   @OneToOne(
           orphanRemoval = true,
@@ -55,6 +58,7 @@ public class User implements UserDetails {
     this.id = id;
   }
 
+  @JsonDeserialize(using = CustomAuthorityDeserializer.class)
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return role.getAuthorities();
@@ -67,7 +71,7 @@ public class User implements UserDetails {
 
   @Override
   public String getUsername() {
-    return email;
+    return username;
   }
 
   @Override

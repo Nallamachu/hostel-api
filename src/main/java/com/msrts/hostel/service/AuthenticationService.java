@@ -1,11 +1,10 @@
 package com.msrts.hostel.service;
 
 import com.msrts.hostel.constant.Role;
-import com.msrts.hostel.model.AuthenticationRequest;
-import com.msrts.hostel.model.AuthenticationResponse;
-import com.msrts.hostel.model.RefreshToken;
-import com.msrts.hostel.model.RegisterRequest;
+import com.msrts.hostel.exception.ErrorConstants;
+import com.msrts.hostel.model.*;
 import com.msrts.hostel.entity.Token;
+import com.msrts.hostel.model.Error;
 import com.msrts.hostel.repository.ReferralSequenceRepository;
 import com.msrts.hostel.repository.TokenRepository;
 import com.msrts.hostel.entity.TokenType;
@@ -24,15 +23,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
   @Autowired
-  private final UserRepository repository;
+  private final UserRepository userRepository;
   @Autowired
   private final TokenRepository tokenRepository;
+  @Autowired
+  private ObjectMapper objectMapper;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
@@ -43,7 +45,17 @@ public class AuthenticationService {
   @Autowired
   private final ReferralSequenceRepository hostelSequenceRepository;
 
-  public AuthenticationResponse register(RegisterRequest request) {
+  public AuthenticationResponse register(RegisterRequest request, boolean isAppDefaultUser) {
+    if(request != null && request.getUsername() != null) {
+      User user = userRepository.findByUsername(request.getUsername());
+      if(user != null) {
+        if(isAppDefaultUser)
+          return new AuthenticationResponse(ErrorConstants.ERROR_USER_EXISTS,null,null);
+        else
+          throw new RuntimeException(ErrorConstants.ERROR_USER_EXISTS);
+      }
+    }
+
     Long currentSequence = hostelSequenceRepository.getSequenceByFirstAndLastName(
             request.getFirstname().trim().substring(0,2).toUpperCase(),
             request.getLastname().trim().substring(0,2).toUpperCase()
@@ -52,6 +64,8 @@ public class AuthenticationService {
         .firstname(request.getFirstname())
         .lastname(request.getLastname())
         .email(request.getEmail())
+            .username(request.getUsername())
+            .mobile(request.getMobile())
         .password(passwordEncoder.encode(request.getPassword()))
         .role((request.getRole()!=null) ? request.getRole(): Role.USER)
         .referralCode(generateSequence(request, currentSequence))
@@ -59,7 +73,7 @@ public class AuthenticationService {
         .points(100)
         .build();
 
-    var savedUser = repository.save(user);
+    var savedUser = userRepository.save(user);
     var jwtToken = jwtService.generateToken(user);
     var refreshToken = jwtService.generateRefreshToken(user);
     saveUserToken(savedUser, jwtToken);
@@ -84,11 +98,11 @@ public class AuthenticationService {
   public AuthenticationResponse authenticate(AuthenticationRequest request) {
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
-            request.getEmail(),
+            request.getUsername(),
             request.getPassword()
         )
     );
-    var user = repository.findByEmail(request.getEmail());
+    var user = userRepository.findByUsername(request.getUsername());
     var jwtToken = jwtService.generateToken(user);
     var refreshToken = jwtService.generateRefreshToken(user);
     revokeAllUserTokens(user);
@@ -134,7 +148,7 @@ public class AuthenticationService {
     refreshToken = authHeader.substring(7);
     userEmail = jwtService.extractUsername(refreshToken);
     if (userEmail != null) {
-      var user = this.repository.findByEmail(userEmail);
+      var user = this.userRepository.findByEmail(userEmail);
       if (jwtService.isTokenValid(refreshToken, user)) {
         var accessToken = jwtService.generateToken(user);
         revokeAllUserTokens(user);
@@ -144,7 +158,7 @@ public class AuthenticationService {
                 .refreshToken(new RefreshToken(1,user.getEmail(),refreshToken,2,
                         new Date(System.currentTimeMillis() + refreshExpiration)))
                 .build();
-        new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+        objectMapper.writeValue(response.getOutputStream(), authResponse);
       }
     }
   }

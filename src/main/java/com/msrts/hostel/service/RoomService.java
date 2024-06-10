@@ -1,6 +1,7 @@
 package com.msrts.hostel.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.msrts.hostel.entity.Hostel;
 import com.msrts.hostel.entity.Room;
 import com.msrts.hostel.entity.Tenant;
 import com.msrts.hostel.exception.ErrorConstants;
@@ -9,6 +10,7 @@ import com.msrts.hostel.model.Response;
 import com.msrts.hostel.model.RoomDto;
 import com.msrts.hostel.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +35,7 @@ public class RoomService {
     }
 
     public Response<List<RoomDto>> findAllRoomsByHostelId(Long hostelId, Response<List<RoomDto>> response, Pageable pageable) {
-        List<Room> rooms = roomRepository.findAllRoomsByHostelId(hostelId, pageable);
+        Page<Room> rooms = roomRepository.findAllRoomsByHostelId(hostelId, pageable);
         if(!rooms.isEmpty()) {
             List<RoomDto> roomDtos = rooms.stream().map(room -> objectMapper.convertValue(room, RoomDto.class)).toList();
             response.setData(roomDtos);
@@ -67,7 +69,7 @@ public class RoomService {
             room.setCapacity(roomDto.getCapacity());
             room.setFloorNo(roomDto.getFloorNo());
             room.setTenants(roomDto.getTenants());
-            room.setHostel(roomDto.getHostel());
+            room.setHostel(new Hostel(roomDto.getHostel().getId()));
             room = roomRepository.save(room);
             roomDto = objectMapper.convertValue(room, RoomDto.class);
             response.setData(roomDto);

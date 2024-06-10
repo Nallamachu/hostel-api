@@ -1,16 +1,27 @@
 package com.msrts.hostel.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
-@Table
+@Table(name = "tenant",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "mobile"),
+                @UniqueConstraint(columnNames = "idNumber")
+        })
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,23 +34,28 @@ public class Tenant {
     private String firstName;
     private String middleName;
     private String lastName;
-    private Number mobile;
-    private String idProof;
+    private String mobile;
+    private String idNumber;
     private String idType;
-    private Date entryDate;
-    private Date exitDate;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private LocalDateTime entryDate;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private LocalDateTime exitDate;
     private boolean isActive;
 
     @OneToOne(
             orphanRemoval = true,
-            cascade = { CascadeType.PERSIST, CascadeType.REFRESH }
+            cascade = CascadeType.ALL
     )
     private Address address;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", referencedColumnName = "id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Room room;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "tenant")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "tenant", cascade = CascadeType.ALL)
     private Set<Payment> payments;
 }

@@ -1,5 +1,9 @@
 package com.msrts.hostel.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.msrts.hostel.entity.Tenant;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -11,6 +15,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -24,11 +29,13 @@ public class PaymentDto {
     @NotBlank(message = "Transaction type should be CASH/UPI/CARD/ACCOUNT-TRANSFER")
     private String transactionType;
     @NotNull(message = "Start date should not be null")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date startDate;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private LocalDateTime startDate;
     @NotNull(message = "End date should not be null")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date endDate;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private LocalDateTime endDate;
     @Min(value = 0L, message = "Amount should be greater than Zero")
     private double amount;
     @NotNull(message = "Tenant should not be null")

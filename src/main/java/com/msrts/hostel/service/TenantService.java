@@ -1,7 +1,6 @@
 package com.msrts.hostel.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.msrts.hostel.entity.Hostel;
 import com.msrts.hostel.entity.Room;
 import com.msrts.hostel.entity.Tenant;
 import com.msrts.hostel.exception.ErrorConstants;
@@ -12,13 +11,12 @@ import com.msrts.hostel.repository.HostelRepository;
 import com.msrts.hostel.repository.RoomRepository;
 import com.msrts.hostel.repository.TenantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class TenantService {
@@ -42,7 +40,7 @@ public class TenantService {
                 return response;
             }
 
-            Number activeTenantsCount = roomRepository.activeTenantCountByRoomId(room.get().getId());
+            Number activeTenantsCount = tenantRepository.activeTenantCountByRoomId(room.get().getId());
             if(activeTenantsCount != null && room.get().getCapacity() > activeTenantsCount.longValue()) {
                 Tenant tenant = objectMapper.convertValue(tenantDto, Tenant.class);
                 tenant = tenantRepository.save(tenant);
@@ -59,41 +57,32 @@ public class TenantService {
         return response;
     }
 
-    public Response<List<TenantDto>> getAllActiveTenantsByHostelId(Long hostelId, Response<List<TenantDto>> response) {
-        List<Tenant> tenantList = new ArrayList<>();
-        Optional<Hostel> optionalHostel = hostelRepository.findById(hostelId);
-        if(optionalHostel.isPresent()) {
-            Set<Room> rooms = optionalHostel.get().getRooms();
-            if(!rooms.isEmpty()) {
-                for(Room room: rooms) {
-                    tenantList.addAll(room.getTenants().stream().filter(Tenant::isActive).toList());
-                }
-            }
-        } else {
-            response.setErrors(List.of(new Error("ERROR_HOSTEL_NOT_FOUND", ErrorConstants.ERROR_HOSTEL_NOT_FOUND)));
+    public Response<List<TenantDto>> getAllActiveTenantsByHostelId(Long hostelId, Pageable pageable, Response<List<TenantDto>> response) {
+        Page<Tenant> tenants = tenantRepository.findAllActiveTenantsByHostelId(hostelId, pageable);
+        if(!tenants.isEmpty()) {
+            List<TenantDto> tenantDtoList = tenants.stream()
+                    .map(tenant -> objectMapper.convertValue(tenant, TenantDto.class))
+                    .toList();
+            response.setData(tenantDtoList);
         }
 
-        if(!tenantList.isEmpty()) {
-            List<TenantDto> tenantDtos = tenantList.stream().map(tenant -> objectMapper.convertValue(tenant, TenantDto.class)).toList();
-            response.setData(tenantDtos);
-        }
-        return  response;
+        return response;
     }
 
     public Response<List<TenantDto>> getTenantsByNameContains(String name, Response<List<TenantDto>> response, Pageable pageable) {
-        List<Tenant> tenants = tenantRepository.findAllTenantsByGivenNameContains(name, pageable);
+        Page<Tenant> tenants = tenantRepository.findAllTenantsByGivenNameContains(name, name, name, pageable);
         if(!tenants.isEmpty()) {
-            List<TenantDto> tenantDtos = tenants.stream().map(tenant -> objectMapper.convertValue(tenant, TenantDto.class)).toList();
-            response.setData(tenantDtos);
+            List<TenantDto> tenantDtoList = tenants.stream().map(tenant -> objectMapper.convertValue(tenant, TenantDto.class)).toList();
+            response.setData(tenantDtoList);
         }
         return response;
     }
 
-    public Response<List<TenantDto>> getTenantsByIdNumberContains(String idNumber, Response<List<TenantDto>> response, Pageable pageable) {
-        List<Tenant> tenants = tenantRepository.findAllTenantsByGivenIdProofContains(idNumber, pageable);
+    public Response<List<TenantDto>> getTenantsByGovernmentIdNumber(String idNumber, Response<List<TenantDto>> response, Pageable pageable) {
+        Page<Tenant> tenants = tenantRepository.findAllTenantsByGivenIdNumber(idNumber, pageable);
         if(!tenants.isEmpty()) {
-            List<TenantDto> tenantDtos = tenants.stream().map(tenant -> objectMapper.convertValue(tenant, TenantDto.class)).toList();
-            response.setData(tenantDtos);
+            List<TenantDto> tenantDtoList = tenants.stream().map(tenant -> objectMapper.convertValue(tenant, TenantDto.class)).toList();
+            response.setData(tenantDtoList);
         }
         return response;
     }
@@ -118,7 +107,7 @@ public class TenantService {
         tenant.setMobile(tenantDto.getMobile());
         tenant.setEntryDate(tenantDto.getEntryDate());
         tenant.setExitDate(tenantDto.getExitDate());
-        tenant.setIdProof(tenantDto.getIdProof());
+        tenant.setIdNumber(tenantDto.getIdNumber());
         tenant.setIdType(tenantDto.getIdType());
         tenant.setRoom(tenantDto.getRoom());
         tenant.setActive(tenantDto.isActive());

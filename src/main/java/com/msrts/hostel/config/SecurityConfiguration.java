@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,8 +25,7 @@ import static com.msrts.hostel.constant.Permission.MANAGER_CREATE;
 import static com.msrts.hostel.constant.Permission.MANAGER_DELETE;
 import static com.msrts.hostel.constant.Permission.MANAGER_READ;
 import static com.msrts.hostel.constant.Permission.MANAGER_UPDATE;
-import static com.msrts.hostel.constant.Role.ADMIN;
-import static com.msrts.hostel.constant.Role.MANAGER;
+import static com.msrts.hostel.constant.Role.*;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -74,6 +74,31 @@ public class SecurityConfiguration {
                                 .requestMatchers(POST, "/api/v1/management/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name())
                                 .requestMatchers(PUT, "/api/v1/management/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name())
                                 .requestMatchers(DELETE, "/api/v1/management/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name())
+                                .requestMatchers("/api/v1/hostel/**").hasAnyRole(ADMIN.name(), MANAGER.name(), USER.name())
+                                .requestMatchers(GET, "/api/v1/hostel/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name(),USER.name())
+                                .requestMatchers(POST, "/api/v1/hostel/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name(), USER.name())
+                                .requestMatchers(PUT, "/api/v1/hostel/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name(), USER.name())
+                                .requestMatchers(DELETE, "/api/v1/hostel/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name(), USER.name())
+                                .requestMatchers("/api/v1/room/**").hasAnyRole(ADMIN.name(), MANAGER.name(), USER.name())
+                                .requestMatchers(GET, "/api/v1/room/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name(),USER.name())
+                                .requestMatchers(POST, "/api/v1/room/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name(), USER.name())
+                                .requestMatchers(PUT, "/api/v1/room/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name(), USER.name())
+                                .requestMatchers(DELETE, "/api/v1/room/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name(), USER.name())
+                                .requestMatchers("/api/v1/tenant/**").hasAnyRole(ADMIN.name(), MANAGER.name(), USER.name())
+                                .requestMatchers(GET, "/api/v1/tenant/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name(),USER.name())
+                                .requestMatchers(POST, "/api/v1/tenant/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name(), USER.name())
+                                .requestMatchers(PUT, "/api/v1/tenant/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name(), USER.name())
+                                .requestMatchers(DELETE, "/api/v1/tenant/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name(), USER.name())
+                                .requestMatchers("/api/v1/expense/**").hasAnyRole(ADMIN.name(), MANAGER.name(), USER.name())
+                                .requestMatchers(GET, "/api/v1/expense/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name(),USER.name())
+                                .requestMatchers(POST, "/api/v1/expense/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name(), USER.name())
+                                .requestMatchers(PUT, "/api/v1/expense/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name(), USER.name())
+                                .requestMatchers(DELETE, "/api/v1/expense/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name(), USER.name())
+                                .requestMatchers("/api/v1/payment/**").hasAnyRole(ADMIN.name(), MANAGER.name(), USER.name())
+                                .requestMatchers(GET, "/api/v1/payment/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name(),USER.name())
+                                .requestMatchers(POST, "/api/v1/payment/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name(), USER.name())
+                                .requestMatchers(PUT, "/api/v1/payment/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name(), USER.name())
+                                .requestMatchers(DELETE, "/api/v1/payment/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name(), USER.name())
                                 .anyRequest()
                                 .authenticated()
                 )
@@ -90,17 +115,17 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-    /*@Bean
+    @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("*") // Replace with your Angular app URL
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allowed HTTP methods
-                        .allowedHeaders("*") // Allowed request headers (you can customize this based on your requirements)
-                        .allowCredentials(true);
+                        .allowedOrigins("*")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders(HttpHeaders.CONTENT_TYPE,
+                                HttpHeaders.AUTHORIZATION);
             }
         };
-    }*/
+    }
 }

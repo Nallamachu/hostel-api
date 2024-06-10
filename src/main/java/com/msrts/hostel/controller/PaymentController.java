@@ -5,6 +5,7 @@ import com.msrts.hostel.model.Error;
 import com.msrts.hostel.model.PaymentDto;
 import com.msrts.hostel.model.Response;
 import com.msrts.hostel.service.PaymentService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +17,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/payment")
-@CrossOrigin
+@RequiredArgsConstructor
+@CrossOrigin(exposedHeaders="Access-Control-Allow-Origin")
 public class PaymentController {
 
     @Autowired

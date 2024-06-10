@@ -11,6 +11,7 @@ import com.msrts.hostel.model.Response;
 import com.msrts.hostel.repository.HostelRepository;
 import com.msrts.hostel.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -39,18 +40,25 @@ public class HostelService {
             return response;
         }
 
-        List<Hostel> hostelList = hostelRepository.findAllHostelsByUserId(new User(userId), pageable);
+        Page<Hostel> hostelList = hostelRepository.findAllHostelsByUserId(userId, pageable);
         if(hostelList != null && !hostelList.isEmpty()) {
             List<HostelDto> hostelDtos = hostelList.stream()
                     .map(hostel -> objectMapper.convertValue(hostel, HostelDto.class)).toList();
             response.setData(hostelDtos);
         }
-        //log.info("End of finding all hostels by current logged in user id");
         return response;
     }
 
     public Response<HostelDto> createHostel(Response<HostelDto> response, HostelDto hostelDto) {
         //log.info("Start of creating new hostel");
+        Optional<User> optionalUser = userRepository.findById(hostelDto.getOwner().getId());
+        if(optionalUser.isPresent())
+            hostelDto.setOwner(optionalUser.get());
+        else{
+            response.setErrors(List.of(new Error("ERROR_USER_NOT_FOUND", ErrorConstants.ERROR_USER_NOT_FOUND + hostelDto.getOwner().getId())));
+            return response;
+        }
+
         Hostel hostel = objectMapper.convertValue(hostelDto, Hostel.class);
         hostel = hostelRepository.save(hostel);
         hostelDto = objectMapper.convertValue(hostel, HostelDto.class);
