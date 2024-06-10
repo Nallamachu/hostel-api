@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,69 +34,89 @@ public class TenantService {
     private ObjectMapper objectMapper;
 
     public Response<TenantDto> createTenant(TenantDto tenantDto, Response<TenantDto> response) {
-        if(tenantDto.getRoom() != null && tenantDto.getRoom().getId()!=null) {
-            Optional<Room> room = roomRepository.findById(tenantDto.getRoom().getId());
-            if(room.isEmpty()) {
-                response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID + " for Room")));
-                return response;
-            }
+        try {
+            if(tenantDto.getRoom() != null && tenantDto.getRoom().getId()!=null) {
+                Optional<Room> room = roomRepository.findById(tenantDto.getRoom().getId());
+                if(room.isEmpty()) {
+                    response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID + " for Room")));
+                    return response;
+                }
 
-            Number activeTenantsCount = tenantRepository.activeTenantCountByRoomId(room.get().getId());
-            if(activeTenantsCount != null && room.get().getCapacity() > activeTenantsCount.longValue()) {
-                Tenant tenant = objectMapper.convertValue(tenantDto, Tenant.class);
-                tenant = tenantRepository.save(tenant);
-                tenantDto = objectMapper.convertValue(tenant, TenantDto.class);
-                response.setData(tenantDto);
+                Number activeTenantsCount = tenantRepository.activeTenantCountByRoomId(room.get().getId());
+                if(activeTenantsCount != null && room.get().getCapacity() > activeTenantsCount.longValue()) {
+                        Tenant tenant = objectMapper.convertValue(tenantDto, Tenant.class);
+                        tenant = tenantRepository.save(tenant);
+                        tenantDto = objectMapper.convertValue(tenant, TenantDto.class);
+                        response.setData(tenantDto);
+
+                } else {
+                    response.setErrors(List.of(new Error("ERROR_ROOM_IS_FULL", ErrorConstants.ERROR_ROOM_IS_FULL)));
+                    return response;
+                }
             } else {
-                response.setErrors(List.of(new Error("ERROR_ROOM_IS_FULL", ErrorConstants.ERROR_ROOM_IS_FULL)));
+                response.setErrors(List.of(new Error("INVALID_REQUEST", ErrorConstants.INVALID_REQUEST)));
                 return response;
             }
-        } else {
-            response.setErrors(List.of(new Error("INVALID_REQUEST", ErrorConstants.INVALID_REQUEST)));
-            return response;
+        } catch (RuntimeException ex) {
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
         }
         return response;
     }
 
     public Response<List<TenantDto>> getAllActiveTenantsByHostelId(Long hostelId, Pageable pageable, Response<List<TenantDto>> response) {
-        Page<Tenant> tenants = tenantRepository.findAllActiveTenantsByHostelId(hostelId, pageable);
-        if(!tenants.isEmpty()) {
-            List<TenantDto> tenantDtoList = tenants.stream()
-                    .map(tenant -> objectMapper.convertValue(tenant, TenantDto.class))
-                    .toList();
-            response.setData(tenantDtoList);
+        try {
+            Page<Tenant> tenants = tenantRepository.findAllActiveTenantsByHostelId(hostelId, pageable);
+            if(!tenants.isEmpty()) {
+                List<TenantDto> tenantDtoList = tenants.stream()
+                        .map(tenant -> objectMapper.convertValue(tenant, TenantDto.class))
+                        .toList();
+                response.setData(tenantDtoList);
+            }
+        } catch (RuntimeException ex) {
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
         }
-
         return response;
     }
 
     public Response<List<TenantDto>> getTenantsByNameContains(String name, Response<List<TenantDto>> response, Pageable pageable) {
-        Page<Tenant> tenants = tenantRepository.findAllTenantsByGivenNameContains(name, name, name, pageable);
-        if(!tenants.isEmpty()) {
-            List<TenantDto> tenantDtoList = tenants.stream().map(tenant -> objectMapper.convertValue(tenant, TenantDto.class)).toList();
-            response.setData(tenantDtoList);
+        try {
+            Page<Tenant> tenants = tenantRepository.findAllTenantsByGivenNameContains(name, name, name, pageable);
+            if(!tenants.isEmpty()) {
+                List<TenantDto> tenantDtoList = tenants.stream().map(tenant -> objectMapper.convertValue(tenant, TenantDto.class)).toList();
+                response.setData(tenantDtoList);
+            }
+        } catch (RuntimeException ex) {
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
         }
         return response;
     }
 
     public Response<List<TenantDto>> getTenantsByGovernmentIdNumber(String idNumber, Response<List<TenantDto>> response, Pageable pageable) {
-        Page<Tenant> tenants = tenantRepository.findAllTenantsByGivenIdNumber(idNumber, pageable);
-        if(!tenants.isEmpty()) {
-            List<TenantDto> tenantDtoList = tenants.stream().map(tenant -> objectMapper.convertValue(tenant, TenantDto.class)).toList();
-            response.setData(tenantDtoList);
+        try {
+            Page<Tenant> tenants = tenantRepository.findAllTenantsByGivenIdNumber(idNumber, pageable);
+            if(!tenants.isEmpty()) {
+                List<TenantDto> tenantDtoList = tenants.stream().map(tenant -> objectMapper.convertValue(tenant, TenantDto.class)).toList();
+                response.setData(tenantDtoList);
+            }
+        } catch (RuntimeException ex) {
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
         }
         return response;
     }
 
     public Response<TenantDto> modifyTenant(Long id, TenantDto tenantDto, Response<TenantDto> response) {
-        Optional<Tenant> optionalTenant = tenantRepository.findById(id);
-        if(optionalTenant.isPresent()) {
-            Tenant tenant = getTenant(tenantDto, optionalTenant.get());
-            tenant = tenantRepository.save(tenant);
-            tenantDto = objectMapper.convertValue(tenant, TenantDto.class);
-            response.setData(tenantDto);
-        } else {
-            response.setErrors(List.of(new Error("ERROR_TENANT_NOT_FOUND", ErrorConstants.ERROR_TENANT_NOT_FOUND)));
+        try {
+            Optional<Tenant> optionalTenant = tenantRepository.findById(id);
+            if(optionalTenant.isPresent()) {
+                Tenant tenant = getTenant(tenantDto, optionalTenant.get());
+                tenant = tenantRepository.save(tenant);
+                tenantDto = objectMapper.convertValue(tenant, TenantDto.class);
+                response.setData(tenantDto);
+            } else {
+                response.setErrors(List.of(new Error("ERROR_TENANT_NOT_FOUND", ErrorConstants.ERROR_TENANT_NOT_FOUND)));
+            }
+        } catch (RuntimeException ex) {
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
         }
         return response;
     }
@@ -116,14 +137,18 @@ public class TenantService {
     }
 
     public Response<String> deleteTenantById(Long id, Response<String> response) {
-        Optional<Tenant> optionalTenant = tenantRepository.findById(id);
-        if(optionalTenant.isPresent()) {
-            Tenant tenant = optionalTenant.get();
-            tenant.setActive(false);
-            tenantRepository.save(tenant);
-            response.setData(getTenantFullName(tenant) + " deleted successfully");
-        } else {
-            response.setErrors(List.of(new Error("ERROR_TENANT_NOT_FOUND", ErrorConstants.ERROR_TENANT_NOT_FOUND + id)));
+        try {
+            Optional<Tenant> optionalTenant = tenantRepository.findById(id);
+            if(optionalTenant.isPresent()) {
+                Tenant tenant = optionalTenant.get();
+                tenant.setActive(false);
+                tenantRepository.save(tenant);
+                response.setData(getTenantFullName(tenant) + " deleted successfully");
+            } else {
+                response.setErrors(List.of(new Error("ERROR_TENANT_NOT_FOUND", ErrorConstants.ERROR_TENANT_NOT_FOUND + id)));
+            }
+        } catch (RuntimeException ex) {
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
         }
         return response;
     }

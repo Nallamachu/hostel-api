@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,37 +34,45 @@ public class HostelService {
 
     public Response<List<HostelDto>> findAllHostelsByUserId(Response<List<HostelDto>> response, Integer userId, Pageable pageable){
         //log.info("Start of finding all hostels by current logged in user id");
-        if(validateUser(userId)) {
-            //log.error(ErrorConstants.ERROR_USER_NOT_FOUND);
-            Error error = new Error("ERROR_USER_NOT_FOUND", ErrorConstants.ERROR_USER_NOT_FOUND);
-            response.setErrors(List.of(error));
-            return response;
-        }
+        try {
+            if(validateUser(userId)) {
+                //log.error(ErrorConstants.ERROR_USER_NOT_FOUND);
+                Error error = new Error("ERROR_USER_NOT_FOUND", ErrorConstants.ERROR_USER_NOT_FOUND);
+                response.setErrors(List.of(error));
+                return response;
+            }
 
-        Page<Hostel> hostelList = hostelRepository.findAllHostelsByUserId(userId, pageable);
-        if(hostelList != null && !hostelList.isEmpty()) {
-            List<HostelDto> hostelDtos = hostelList.stream()
-                    .map(hostel -> objectMapper.convertValue(hostel, HostelDto.class)).toList();
-            response.setData(hostelDtos);
+            Page<Hostel> hostelList = hostelRepository.findAllHostelsByUserId(userId, pageable);
+            if(hostelList != null && !hostelList.isEmpty()) {
+                List<HostelDto> hostelDtos = hostelList.stream()
+                        .map(hostel -> objectMapper.convertValue(hostel, HostelDto.class)).toList();
+                response.setData(hostelDtos);
+            }
+        } catch (RuntimeException ex) {
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
         }
         return response;
     }
 
     public Response<HostelDto> createHostel(Response<HostelDto> response, HostelDto hostelDto) {
         //log.info("Start of creating new hostel");
-        Optional<User> optionalUser = userRepository.findById(hostelDto.getOwner().getId());
-        if(optionalUser.isPresent())
-            hostelDto.setOwner(optionalUser.get());
-        else{
-            response.setErrors(List.of(new Error("ERROR_USER_NOT_FOUND", ErrorConstants.ERROR_USER_NOT_FOUND + hostelDto.getOwner().getId())));
-            return response;
-        }
+        try {
+            Optional<User> optionalUser = userRepository.findById(hostelDto.getOwner().getId());
+            if(optionalUser.isPresent())
+                hostelDto.setOwner(optionalUser.get());
+            else{
+                response.setErrors(List.of(new Error("ERROR_USER_NOT_FOUND", ErrorConstants.ERROR_USER_NOT_FOUND + hostelDto.getOwner().getId())));
+                return response;
+            }
 
-        Hostel hostel = objectMapper.convertValue(hostelDto, Hostel.class);
-        hostel = hostelRepository.save(hostel);
-        hostelDto = objectMapper.convertValue(hostel, HostelDto.class);
-        if(hostelDto != null) {
-            response.setData(hostelDto);
+            Hostel hostel = objectMapper.convertValue(hostelDto, Hostel.class);
+            hostel = hostelRepository.save(hostel);
+            hostelDto = objectMapper.convertValue(hostel, HostelDto.class);
+            if(hostelDto != null) {
+                response.setData(hostelDto);
+            }
+        } catch (RuntimeException ex) {
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
         }
         //log.info("End of creating new hostel");
         return response;
@@ -75,33 +84,41 @@ public class HostelService {
     }
 
     public Response<HostelDto> modifyHostel(Long id, HostelDto hostelDto, Response<HostelDto> response) {
-        Optional<Hostel> optionalHostel = hostelRepository.findById(id);
-        if(optionalHostel.isPresent()) {
-            Hostel hostel = optionalHostel.get();
-            hostel.setName(hostelDto.getName());
-            hostel.setType(hostelDto.getType());
-            hostel.setActive(hostelDto.isActive());
-            hostel.setRooms(hostelDto.getRooms());
-            hostel.setOwner(hostelDto.getOwner());
-            hostel.setAddress(objectMapper.convertValue(hostelDto.getAddress(), Address.class));
-            hostel = hostelRepository.save(hostel);
-            hostelDto = objectMapper.convertValue(hostel, HostelDto.class);
-            response.setData(hostelDto);
-        } else {
-            response.setErrors(List.of(new Error("ERROR_HOSTEL_NOT_FOUND", ErrorConstants.ERROR_HOSTEL_NOT_FOUND)));
+        try {
+            Optional<Hostel> optionalHostel = hostelRepository.findById(id);
+            if(optionalHostel.isPresent()) {
+                Hostel hostel = optionalHostel.get();
+                hostel.setName(hostelDto.getName());
+                hostel.setType(hostelDto.getType());
+                hostel.setActive(hostelDto.isActive());
+                hostel.setRooms(hostelDto.getRooms());
+                hostel.setOwner(hostelDto.getOwner());
+                hostel.setAddress(objectMapper.convertValue(hostelDto.getAddress(), Address.class));
+                hostel = hostelRepository.save(hostel);
+                hostelDto = objectMapper.convertValue(hostel, HostelDto.class);
+                response.setData(hostelDto);
+            } else {
+                response.setErrors(List.of(new Error("ERROR_HOSTEL_NOT_FOUND", ErrorConstants.ERROR_HOSTEL_NOT_FOUND)));
+            }
+        } catch (RuntimeException ex) {
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
         }
         return response;
     }
 
     public Response<String> deleteHostel(Long id, Response<String> response) {
-        Optional<Hostel> optionalHostel = hostelRepository.findById(id);
-        if(optionalHostel.isPresent()) {
-            Hostel hostel = optionalHostel.get();
-            hostel.setActive(false);
-            hostelRepository.save(hostel);
-            response.setData(hostel.getName() + " hostel deleted successfully");
-        } else {
-            response.setErrors(List.of(new Error("ERROR_HOSTEL_NOT_FOUND", ErrorConstants.ERROR_HOSTEL_NOT_FOUND)));
+        try {
+            Optional<Hostel> optionalHostel = hostelRepository.findById(id);
+            if(optionalHostel.isPresent()) {
+                Hostel hostel = optionalHostel.get();
+                hostel.setActive(false);
+                hostelRepository.save(hostel);
+                response.setData(hostel.getName() + " hostel deleted successfully");
+            } else {
+                response.setErrors(List.of(new Error("ERROR_HOSTEL_NOT_FOUND", ErrorConstants.ERROR_HOSTEL_NOT_FOUND)));
+            }
+        } catch (RuntimeException ex) {
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
         }
         return response;
     }
