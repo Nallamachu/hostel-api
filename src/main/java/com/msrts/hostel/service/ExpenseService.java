@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
@@ -63,23 +65,20 @@ public class ExpenseService {
      */
     public Response<List<ExpenseDto>> getAllExpensesByTimePeriod(Long hostelId, String timePeriod, Response<List<ExpenseDto>> response, Pageable pageable) {
         try {
-            DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate now = LocalDate.now();
             List<Expense> expenses = null;
             if (timePeriod.equalsIgnoreCase(ErrorConstants.TIME_PERIOD_LAST_MONTH)) {
-                String startDate = now.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth()).format(format);
-                String endDate = now.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()).format(format);
+                YearMonth yearMonth = YearMonth.now().minusMonths(1);
                 expenses = expenseRepository.findAllExpensesByHostelIdAndTimePeriod(
                         hostelId,
-                        startDate,
-                        endDate,
+                        LocalDateTime.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), 1, 0, 0, 0),
+                        LocalDateTime.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), yearMonth.atEndOfMonth().getDayOfMonth(), 23, 59, 59),
                         pageable);
             } else if (timePeriod.equalsIgnoreCase(ErrorConstants.TIME_PERIOD_CURRENT_MONTH)) {
-                String startDate = now.with(TemporalAdjusters.firstDayOfMonth()).format(format);
+                YearMonth yearMonth = YearMonth.now();
                 expenses = expenseRepository.findAllExpensesByHostelIdAndTimePeriod(
                         hostelId,
-                        startDate,
-                        now.format(format),
+                        LocalDateTime.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), 1, 0, 0, 0),
+                        LocalDateTime.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), yearMonth.atEndOfMonth().getDayOfMonth(), 23, 59, 59),
                         pageable);
             } else {
                 response.setErrors(List.of(new Error("INVALID_TIME_PERIOD", ErrorConstants.INVALID_TIME_PERIOD)));
