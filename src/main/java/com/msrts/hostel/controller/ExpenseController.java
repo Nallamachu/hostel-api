@@ -1,10 +1,8 @@
 package com.msrts.hostel.controller;
 
-import com.msrts.hostel.entity.Expense;
 import com.msrts.hostel.exception.ErrorConstants;
 import com.msrts.hostel.model.Error;
 import com.msrts.hostel.model.ExpenseDto;
-import com.msrts.hostel.model.PaymentDto;
 import com.msrts.hostel.model.Response;
 import com.msrts.hostel.service.ExpenseService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/api/v1/expense")
 @RequiredArgsConstructor
-@CrossOrigin(exposedHeaders="Access-Control-Allow-Origin")
+@CrossOrigin(exposedHeaders = "Access-Control-Allow-Origin")
 public class ExpenseController {
 
     @Autowired
@@ -29,7 +27,7 @@ public class ExpenseController {
     @PostMapping(path = "/create-expense", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Response<ExpenseDto> createExpenseRecord(@RequestBody ExpenseDto expenseDto) {
         Response<ExpenseDto> response = new Response<>();
-        if(expenseDto==null) {
+        if (expenseDto == null) {
             response.setErrors(List.of(new Error("INVALID_REQUEST", ErrorConstants.INVALID_REQUEST)));
             return response;
         }
@@ -38,9 +36,9 @@ public class ExpenseController {
 
     @GetMapping(path = "/find-all-expenses-by-hostel-id", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response<List<ExpenseDto>> getAllExpensesByHostelId(@RequestParam(required = true) Long hostelId,
-                                                           @RequestParam(defaultValue = "0") int page,
-                                                           @RequestParam(defaultValue = "10") int size,
-                                                           @RequestParam(defaultValue = "id") String[] sort) {
+                                                               @RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "10") int size,
+                                                               @RequestParam(defaultValue = "id") String[] sort) {
         Response<List<ExpenseDto>> response = new Response<>();
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
         if (hostelId == 0 || hostelId < 0) {
@@ -54,10 +52,10 @@ public class ExpenseController {
 
     @GetMapping(path = "/find-all-expenses-by-hostel-id-and-time-period", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response<List<ExpenseDto>> getAllExpensesByHostelIdAndTimePeriod(@RequestParam(required = true) Long hostelId,
-                                                               @RequestParam(defaultValue = "CURRENT_MONTH",required = true) String timePeriod,
-                                                               @RequestParam(defaultValue = "0") int page,
-                                                               @RequestParam(defaultValue = "10") int size,
-                                                               @RequestParam(defaultValue = "id") String[] sort) {
+                                                                            @RequestParam(defaultValue = "CURRENT_MONTH", required = true) String timePeriod,
+                                                                            @RequestParam(defaultValue = "0") int page,
+                                                                            @RequestParam(defaultValue = "10") int size,
+                                                                            @RequestParam(defaultValue = "id") String[] sort) {
         Response<List<ExpenseDto>> response = new Response<>();
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
         if (hostelId == 0 || hostelId < 0) {
@@ -72,7 +70,7 @@ public class ExpenseController {
     @PutMapping(path = "modify-expense/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Response<ExpenseDto> modifyExpenseById(@PathVariable("id") Long id, ExpenseDto expenseDto) {
         Response<ExpenseDto> response = new Response<>();
-        if(id == null || id >= 0 || expenseDto == null) {
+        if (id == null || id >= 0 || expenseDto == null) {
             response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID)));
             return response;
         }
@@ -81,9 +79,9 @@ public class ExpenseController {
     }
 
     @DeleteMapping(path = "/delete-expense/{id}")
-    public Response<String> deleteExpenseById(@PathVariable("id") Long id){
+    public Response<String> deleteExpenseById(@PathVariable("id") Long id) {
         Response<String> response = new Response<>();
-        if(id == null || id <= 0) {
+        if (id == null || id <= 0) {
             response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID)));
             return response;
         }

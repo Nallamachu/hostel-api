@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/api/v1/tenant")
 @RequiredArgsConstructor
-@CrossOrigin(exposedHeaders="Access-Control-Allow-Origin")
+@CrossOrigin(exposedHeaders = "Access-Control-Allow-Origin")
 public class TenantController {
     private static final Logger LOGGER = LoggerFactory.getLogger(TenantController.class);
     @Autowired
@@ -29,7 +29,7 @@ public class TenantController {
     @PostMapping(path = "/create-tenant", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Response<TenantDto> createTenant(@RequestBody TenantDto tenantDto) {
         Response<TenantDto> response = new Response<>();
-        if(tenantDto==null) {
+        if (tenantDto == null) {
             response.setErrors(List.of(new Error("INVALID_REQUEST", ErrorConstants.INVALID_REQUEST)));
             return response;
         }
@@ -41,7 +41,7 @@ public class TenantController {
                                                              @RequestParam(defaultValue = "0") int page,
                                                              @RequestParam(defaultValue = "10") int size,
                                                              @RequestParam(defaultValue = "id") String[] sort) {
-        LOGGER.info("Start of getAllTenantsByHostelId {0}" , hostelId);
+        LOGGER.info("Start of getAllTenantsByHostelId {0}", hostelId);
         Response<List<TenantDto>> response = new Response<>();
         if (hostelId == 0 || hostelId < 0) {
             response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID)));
@@ -54,10 +54,10 @@ public class TenantController {
 
     @GetMapping(path = "/search-tenant-by-name-or-government-id-number", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response<List<TenantDto>> searchTenantByNameOrGovernmentProof(@RequestParam(required = false) String name,
-                                                             @RequestParam(required = false) String idNumber,
-                                                             @RequestParam(defaultValue = "0") int page,
-                                                             @RequestParam(defaultValue = "10") int size,
-                                                             @RequestParam(defaultValue = "id") String[] sort) {
+                                                                         @RequestParam(required = false) String idNumber,
+                                                                         @RequestParam(defaultValue = "0") int page,
+                                                                         @RequestParam(defaultValue = "10") int size,
+                                                                         @RequestParam(defaultValue = "id") String[] sort) {
         Response<List<TenantDto>> response = new Response<>();
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
         if (name == null && idNumber == null) {
@@ -66,14 +66,14 @@ public class TenantController {
         }
 
         return (idNumber == null)
-                ?tenantService.getTenantsByNameContains(name, response, pageable)
-                :tenantService.getTenantsByGovernmentIdNumber(idNumber, response,pageable);
+                ? tenantService.getTenantsByNameContains(name, response, pageable)
+                : tenantService.getTenantsByGovernmentIdNumber(idNumber, response, pageable);
     }
 
     @PutMapping(path = "/modify-tenant/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Response<TenantDto> modifyTenant(@PathVariable("id") Long id, @RequestBody TenantDto tenantDto) {
         Response<TenantDto> response = new Response<>();
-        if(id == null || tenantDto == null) {
+        if (id == null || tenantDto == null) {
             response.setErrors(List.of(new Error("INVALID_REQUEST", ErrorConstants.INVALID_REQUEST)));
             return response;
         }
@@ -83,8 +83,8 @@ public class TenantController {
     @DeleteMapping(path = "/delete-tenant-by-id/{id}")
     public Response<String> deleteTenantById(@PathVariable(value = "id") Long id) {
         Response<String> response = new Response<>();
-        if(id==null) {
-            response.setErrors(List.of(new Error("INVALID_INPUT_ID",ErrorConstants.INVALID_INPUT_ID)));
+        if (id == null) {
+            response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID)));
             return response;
         }
         return tenantService.deleteTenantById(id, response);

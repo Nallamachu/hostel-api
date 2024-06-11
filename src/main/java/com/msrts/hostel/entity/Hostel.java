@@ -32,7 +32,7 @@ public class Hostel {
 
     @OneToOne(
             orphanRemoval = true,
-            cascade = { CascadeType.PERSIST, CascadeType.REFRESH }
+            cascade = {CascadeType.PERSIST, CascadeType.REFRESH}
     )
     private Address address;
 

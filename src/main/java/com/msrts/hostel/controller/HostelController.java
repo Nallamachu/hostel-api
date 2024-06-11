@@ -13,22 +13,21 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/hostel")
 @RequiredArgsConstructor
-@CrossOrigin(exposedHeaders="Access-Control-Allow-Origin")
+@CrossOrigin(exposedHeaders = "Access-Control-Allow-Origin")
 public class HostelController {
     @Autowired
     private HostelService hostelService;
 
     @GetMapping(path = "/find-all-hostels-by-user", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response<List<HostelDto>> getAllHostelsByUserId(@RequestParam Integer userId,
-                                                @RequestParam(defaultValue = "0") int page,
-                                                @RequestParam(defaultValue = "10") int size,
-                                                @RequestParam(defaultValue = "id") String[] sort) {
+                                                           @RequestParam(defaultValue = "0") int page,
+                                                           @RequestParam(defaultValue = "10") int size,
+                                                           @RequestParam(defaultValue = "id") String[] sort) {
         Response<List<HostelDto>> response = new Response<>();
         Pageable pagingSort = PageRequest.of(page, size, Sort.by(sort));
         if (userId == 0 || userId < 0) {

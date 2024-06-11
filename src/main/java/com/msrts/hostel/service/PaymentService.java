@@ -13,14 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Year;
 import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,25 +27,25 @@ public class PaymentService {
 
     @Autowired
     private TenantService tenantService;
-    
+
     @Autowired
     private ObjectMapper objectMapper;
 
     @Transactional
     public Response<PaymentDto> createPayment(PaymentDto paymentDto, Response<PaymentDto> response) {
         try {
-            if(paymentDto.getAmount() <= 0) {
+            if (paymentDto.getAmount() <= 0) {
                 response.setErrors(List.of(new Error("INVALID_AMOUNT", ErrorConstants.INVALID_AMOUNT)));
                 return response;
             }
             Payment payment = objectMapper.convertValue(paymentDto, Payment.class);
             payment = paymentRepository.save(payment);
-            if(payment.getId() != null) {
+            if (payment.getId() != null) {
                 paymentDto = objectMapper.convertValue(payment, PaymentDto.class);
                 response.setData(paymentDto);
             }
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }
@@ -58,12 +53,12 @@ public class PaymentService {
     public Response<List<PaymentDto>> getAllPaymentsByTenantId(Long tenantId, Response<List<PaymentDto>> response, Pageable pageable) {
         try {
             List<Payment> payments = paymentRepository.findAllByTenantId(tenantId, pageable);
-            if(!payments.isEmpty()) {
+            if (!payments.isEmpty()) {
                 List<PaymentDto> paymentDtos = payments.stream().map(payment -> objectMapper.convertValue(payment, PaymentDto.class)).toList();
                 response.setData(paymentDtos);
             }
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }
@@ -72,14 +67,14 @@ public class PaymentService {
     public Response<List<PaymentDto>> getPaymentsByHostelIdAndTimePeriod(Long hostelId, String timePeriod, Response<List<PaymentDto>> response, Pageable pageable) {
         try {
             List<Payment> payments = null;
-            Response<List<TenantDto>> tenantResponse = tenantService.getAllActiveTenantsByHostelId(hostelId,null, new Response<>());
-            if(tenantResponse.getErrors() != null){
+            Response<List<TenantDto>> tenantResponse = tenantService.getAllActiveTenantsByHostelId(hostelId, null, new Response<>());
+            if (tenantResponse.getErrors() != null) {
                 response.setErrors(tenantResponse.getErrors());
                 return response;
             }
             List<Long> tenantIds = tenantResponse.getData().stream().map(TenantDto::getId).toList();
 
-            if(!tenantIds.isEmpty() && timePeriod.equalsIgnoreCase(ErrorConstants.TIME_PERIOD_LAST_MONTH)){
+            if (!tenantIds.isEmpty() && timePeriod.equalsIgnoreCase(ErrorConstants.TIME_PERIOD_LAST_MONTH)) {
                 YearMonth yearMonth = YearMonth.now().minusMonths(1);
                 System.out.println(LocalDateTime.of(yearMonth.getYear(), yearMonth.getMonth(), yearMonth.atEndOfMonth().getDayOfMonth(), 23, 59, 59));
                 payments = paymentRepository.findAllPaymentsByTenantIdsAndTimePeriod(
@@ -87,7 +82,7 @@ public class PaymentService {
                         LocalDateTime.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), 1, 0, 0, 0),
                         LocalDateTime.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), yearMonth.atEndOfMonth().getDayOfMonth(), 23, 59, 59),
                         pageable);
-            } else if(!tenantIds.isEmpty() && timePeriod.equalsIgnoreCase(ErrorConstants.TIME_PERIOD_CURRENT_MONTH)) {
+            } else if (!tenantIds.isEmpty() && timePeriod.equalsIgnoreCase(ErrorConstants.TIME_PERIOD_CURRENT_MONTH)) {
                 YearMonth yearMonth = YearMonth.now();
                 System.out.println(LocalDateTime.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), yearMonth.atEndOfMonth().getDayOfMonth(), 23, 59, 59));
                 payments = paymentRepository.findAllPaymentsByTenantIdsAndTimePeriod(
@@ -99,12 +94,12 @@ public class PaymentService {
                 response.setErrors(List.of(new Error("INVALID_TIME_PERIOD", ErrorConstants.INVALID_TIME_PERIOD)));
             }
 
-            if(payments != null && payments.size() > 0) {
+            if (payments != null && payments.size() > 0) {
                 List<PaymentDto> paymentDtos = payments.stream().map(expense -> objectMapper.convertValue(expense, PaymentDto.class)).toList();
                 response.setData(paymentDtos);
             }
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }
@@ -112,7 +107,7 @@ public class PaymentService {
     public Response<PaymentDto> modifyPayment(Long id, PaymentDto paymentDto, Response<PaymentDto> response) {
         try {
             Optional<Payment> optionalPayment = paymentRepository.findById(id);
-            if(optionalPayment.isPresent()) {
+            if (optionalPayment.isPresent()) {
                 Payment payment = optionalPayment.get();
                 payment.setPaymentType(paymentDto.getPaymentType());
                 payment.setAmount(paymentDto.getAmount());
@@ -126,7 +121,7 @@ public class PaymentService {
                 response.setErrors(List.of(new Error("ERROR_PAYMENT_NOT_FOUND", ErrorConstants.ERROR_PAYMENT_NOT_FOUND + id)));
             }
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }
@@ -136,7 +131,7 @@ public class PaymentService {
             paymentRepository.deleteById(id);
             response.setData("Payment deleted with the id of " + id);
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }

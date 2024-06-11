@@ -13,12 +13,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
-public class RequestValidationException extends Throwable{
+public class RequestValidationException extends Throwable {
 
     @ExceptionHandler(value = {ConfigDataResourceNotFoundException.class, MethodArgumentNotValidException.class})
-    public ResponseEntity<?> handleValidationException(MethodArgumentNotValidException ex, WebRequest request)
-    {
-        List<String> errorMessages = ((MethodArgumentNotValidException)ex)
+    public ResponseEntity<?> handleValidationException(MethodArgumentNotValidException ex, WebRequest request) {
+        List<String> errorMessages = ((MethodArgumentNotValidException) ex)
                 .getBindingResult()
                 .getFieldErrors().stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)

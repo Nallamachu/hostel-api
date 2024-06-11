@@ -34,7 +34,7 @@ public class RoomService {
             roomDto = objectMapper.convertValue(room, RoomDto.class);
             response.setData(roomDto);
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }
@@ -42,12 +42,12 @@ public class RoomService {
     public Response<List<RoomDto>> findAllRoomsByHostelId(Long hostelId, Response<List<RoomDto>> response, Pageable pageable) {
         try {
             Page<Room> rooms = roomRepository.findAllRoomsByHostelId(hostelId, pageable);
-            if(!rooms.isEmpty()) {
+            if (!rooms.isEmpty()) {
                 List<RoomDto> roomDtos = rooms.stream().map(room -> objectMapper.convertValue(room, RoomDto.class)).toList();
                 response.setData(roomDtos);
             }
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }
@@ -55,21 +55,21 @@ public class RoomService {
     public Response<String> deleteRoomById(Long roomId, Response<String> response) {
         try {
             Optional<Room> optionalRoom = roomRepository.findById(roomId);
-            if(optionalRoom.isEmpty()){
+            if (optionalRoom.isEmpty()) {
                 response.setErrors(List.of(new Error("ERROR_ROOM_NOT_FOUND", ErrorConstants.ERROR_ROOM_NOT_FOUND)));
                 return response;
             }
 
             Set<Tenant> tenantSet = optionalRoom.get().getTenants();
-            if(!tenantSet.isEmpty()) {
+            if (!tenantSet.isEmpty()) {
                 response.setErrors(List.of(new Error("ERROR_ROOM_NOT_EMPTY", ErrorConstants.ERROR_ROOM_NOT_EMPTY)));
                 return response;
             }
 
             roomRepository.deleteById(roomId);
-            response.setData("Room deleted with id of "+roomId);
+            response.setData("Room deleted with id of " + roomId);
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }
@@ -77,7 +77,7 @@ public class RoomService {
     public Response<RoomDto> modifyRoom(Long id, RoomDto roomDto, Response<RoomDto> response) {
         try {
             Optional<Room> optionalRoom = roomRepository.findById(id);
-            if(optionalRoom.isPresent()) {
+            if (optionalRoom.isPresent()) {
                 Room room = optionalRoom.get();
                 room.setRoomNo(roomDto.getRoomNo());
                 room.setCapacity(roomDto.getCapacity());
@@ -91,7 +91,7 @@ public class RoomService {
                 response.setErrors(List.of(new Error("ERROR_ROOM_NOT_FOUND", ErrorConstants.ERROR_ROOM_NOT_FOUND)));
             }
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }

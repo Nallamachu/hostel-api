@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/payment")
 @RequiredArgsConstructor
-@CrossOrigin(exposedHeaders="Access-Control-Allow-Origin")
+@CrossOrigin(exposedHeaders = "Access-Control-Allow-Origin")
 public class PaymentController {
 
     @Autowired
@@ -26,9 +26,9 @@ public class PaymentController {
 
     @GetMapping(path = "/payments-by-tenant-id", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response<List<PaymentDto>> getAllPaymentsByTenantId(@RequestParam(required = true) Long tenantId,
-                                                           @RequestParam(defaultValue = "0") int page,
-                                                           @RequestParam(defaultValue = "10") int size,
-                                                           @RequestParam(defaultValue = "id") String[] sort) {
+                                                               @RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "10") int size,
+                                                               @RequestParam(defaultValue = "id") String[] sort) {
         Response<List<PaymentDto>> response = new Response<>();
         Pageable pagingSort = PageRequest.of(page, size, Sort.by(sort));
         if (tenantId == 0 || tenantId < 0) {
@@ -42,7 +42,7 @@ public class PaymentController {
     @PostMapping(path = "/create-payment", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Response<PaymentDto> createPaymentRecord(@RequestBody PaymentDto paymentDto) {
         Response<PaymentDto> response = new Response<>();
-        if(paymentDto==null) {
+        if (paymentDto == null) {
             response.setErrors(List.of(new Error("INVALID_REQUEST", ErrorConstants.INVALID_REQUEST)));
             return response;
         }
@@ -51,7 +51,7 @@ public class PaymentController {
 
     @GetMapping(path = "/payments-by-hostel-id-and-time-period", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response<List<PaymentDto>> getAllPaymentsByHostelIdAndTimePeriod(@RequestParam(required = true) Long hostelId,
-                                                                            @RequestParam(defaultValue = "CURRENT_MONTH",required = true) String timePeriod,
+                                                                            @RequestParam(defaultValue = "CURRENT_MONTH", required = true) String timePeriod,
                                                                             @RequestParam(defaultValue = "0") int page,
                                                                             @RequestParam(defaultValue = "10") int size,
                                                                             @RequestParam(defaultValue = "id") String[] sort) {
@@ -69,7 +69,7 @@ public class PaymentController {
     @PutMapping(path = "modify-payment/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Response<PaymentDto> modifyPaymentById(@PathVariable("id") Long id, PaymentDto paymentDto) {
         Response<PaymentDto> response = new Response<>();
-        if(id == null || id >= 0 || paymentDto == null) {
+        if (id == null || id >= 0 || paymentDto == null) {
             response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID)));
             return response;
         }
@@ -78,9 +78,9 @@ public class PaymentController {
     }
 
     @DeleteMapping(path = "/delete-payment/{id}")
-    public Response<String> deletePaymentById(@PathVariable("id") Long id){
+    public Response<String> deletePaymentById(@PathVariable("id") Long id) {
         Response<String> response = new Response<>();
-        if(id == null || id <= 0) {
+        if (id == null || id <= 0) {
             response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID)));
             return response;
         }

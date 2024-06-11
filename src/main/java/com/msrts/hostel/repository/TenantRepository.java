@@ -24,9 +24,9 @@ public interface TenantRepository extends JpaRepository<Tenant, Long> {
     Page<Tenant> findAllTenantsByRoomIdsIn(List<Long> roomIds, Pageable pageable);
 
     @Query(value = """
-    select t.* from tenant t 
-    where t.is_active = true 
-    and t.room_id in (select r.id from room r where r.hostel_id = ?1)
-    """, nativeQuery = true)
+            select t.* from tenant t 
+            where t.is_active = true 
+            and t.room_id in (select r.id from room r where r.hostel_id = ?1)
+            """, nativeQuery = true)
     Page<Tenant> findAllActiveTenantsByHostelId(Long hostelId, Pageable pageable);
 }

@@ -17,19 +17,9 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import static com.msrts.hostel.constant.Permission.ADMIN_CREATE;
-import static com.msrts.hostel.constant.Permission.ADMIN_DELETE;
-import static com.msrts.hostel.constant.Permission.ADMIN_READ;
-import static com.msrts.hostel.constant.Permission.ADMIN_UPDATE;
-import static com.msrts.hostel.constant.Permission.MANAGER_CREATE;
-import static com.msrts.hostel.constant.Permission.MANAGER_DELETE;
-import static com.msrts.hostel.constant.Permission.MANAGER_READ;
-import static com.msrts.hostel.constant.Permission.MANAGER_UPDATE;
+import static com.msrts.hostel.constant.Permission.*;
 import static com.msrts.hostel.constant.Role.*;
-import static org.springframework.http.HttpMethod.DELETE;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -75,27 +65,27 @@ public class SecurityConfiguration {
                                 .requestMatchers(PUT, "/api/v1/management/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name())
                                 .requestMatchers(DELETE, "/api/v1/management/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name())
                                 .requestMatchers("/api/v1/hostel/**").hasAnyRole(ADMIN.name(), MANAGER.name(), USER.name())
-                                .requestMatchers(GET, "/api/v1/hostel/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name(),USER.name())
+                                .requestMatchers(GET, "/api/v1/hostel/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name(), USER.name())
                                 .requestMatchers(POST, "/api/v1/hostel/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name(), USER.name())
                                 .requestMatchers(PUT, "/api/v1/hostel/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name(), USER.name())
                                 .requestMatchers(DELETE, "/api/v1/hostel/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name(), USER.name())
                                 .requestMatchers("/api/v1/room/**").hasAnyRole(ADMIN.name(), MANAGER.name(), USER.name())
-                                .requestMatchers(GET, "/api/v1/room/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name(),USER.name())
+                                .requestMatchers(GET, "/api/v1/room/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name(), USER.name())
                                 .requestMatchers(POST, "/api/v1/room/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name(), USER.name())
                                 .requestMatchers(PUT, "/api/v1/room/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name(), USER.name())
                                 .requestMatchers(DELETE, "/api/v1/room/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name(), USER.name())
                                 .requestMatchers("/api/v1/tenant/**").hasAnyRole(ADMIN.name(), MANAGER.name(), USER.name())
-                                .requestMatchers(GET, "/api/v1/tenant/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name(),USER.name())
+                                .requestMatchers(GET, "/api/v1/tenant/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name(), USER.name())
                                 .requestMatchers(POST, "/api/v1/tenant/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name(), USER.name())
                                 .requestMatchers(PUT, "/api/v1/tenant/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name(), USER.name())
                                 .requestMatchers(DELETE, "/api/v1/tenant/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name(), USER.name())
                                 .requestMatchers("/api/v1/expense/**").hasAnyRole(ADMIN.name(), MANAGER.name(), USER.name())
-                                .requestMatchers(GET, "/api/v1/expense/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name(),USER.name())
+                                .requestMatchers(GET, "/api/v1/expense/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name(), USER.name())
                                 .requestMatchers(POST, "/api/v1/expense/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name(), USER.name())
                                 .requestMatchers(PUT, "/api/v1/expense/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name(), USER.name())
                                 .requestMatchers(DELETE, "/api/v1/expense/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name(), USER.name())
                                 .requestMatchers("/api/v1/payment/**").hasAnyRole(ADMIN.name(), MANAGER.name(), USER.name())
-                                .requestMatchers(GET, "/api/v1/payment/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name(),USER.name())
+                                .requestMatchers(GET, "/api/v1/payment/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name(), USER.name())
                                 .requestMatchers(POST, "/api/v1/payment/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name(), USER.name())
                                 .requestMatchers(PUT, "/api/v1/payment/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name(), USER.name())
                                 .requestMatchers(DELETE, "/api/v1/payment/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name(), USER.name())

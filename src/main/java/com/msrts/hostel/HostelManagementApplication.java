@@ -43,7 +43,7 @@ public class HostelManagementApplication {
     public CommandLineRunner commandLineRunner(AuthenticationService service) {
         return args -> {
             AddressDto address = new AddressDto(
-                    null, "YSR","India","516227","Andhra Pradesh", 516227l
+                    null, "YSR", "India", "516227", "Andhra Pradesh", 516227l
             );
             var admin = RegisterRequest.builder()
                     .firstname("Admin")

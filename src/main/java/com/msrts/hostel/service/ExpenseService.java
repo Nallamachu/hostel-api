@@ -26,21 +26,21 @@ public class ExpenseService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public Response<ExpenseDto> saveExpenseDetails (ExpenseDto expenseDto, Response<ExpenseDto> response) {
+    public Response<ExpenseDto> saveExpenseDetails(ExpenseDto expenseDto, Response<ExpenseDto> response) {
         try {
-            if(expenseDto != null && expenseDto.getAmount() <= 0) {
+            if (expenseDto != null && expenseDto.getAmount() <= 0) {
                 response.setErrors(List.of(new Error("INVALID_AMOUNT", ErrorConstants.INVALID_AMOUNT)));
                 return response;
             }
 
             Expense expense = objectMapper.convertValue(expenseDto, Expense.class);
             expense = expenseRepository.save(expense);
-            if(expense.getId() != null) {
+            if (expense.getId() != null) {
                 expenseDto = objectMapper.convertValue(expense, ExpenseDto.class);
                 response.setData(expenseDto);
             }
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }
@@ -48,24 +48,25 @@ public class ExpenseService {
     public Response<List<ExpenseDto>> getExpensesByHostelId(Long hostelId, Response<List<ExpenseDto>> response, Pageable pageable) {
         try {
             List<Expense> expenses = expenseRepository.findAllAllExpensesByHostelId(hostelId, pageable);
-            if(!expenses.isEmpty()) {
+            if (!expenses.isEmpty()) {
                 List<ExpenseDto> expenseDtos = expenses.stream().map(expense -> objectMapper.convertValue(expense, ExpenseDto.class)).toList();
                 response.setData(expenseDtos);
             }
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }
+
     /*
-    *   Time period can be LAST_MONTH, CURRENT_MONTH
-    */
+     *   Time period can be LAST_MONTH, CURRENT_MONTH
+     */
     public Response<List<ExpenseDto>> getAllExpensesByTimePeriod(Long hostelId, String timePeriod, Response<List<ExpenseDto>> response, Pageable pageable) {
         try {
             DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate now = LocalDate.now();
             List<Expense> expenses = null;
-            if(timePeriod.equalsIgnoreCase(ErrorConstants.TIME_PERIOD_LAST_MONTH)){
+            if (timePeriod.equalsIgnoreCase(ErrorConstants.TIME_PERIOD_LAST_MONTH)) {
                 String startDate = now.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth()).format(format);
                 String endDate = now.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()).format(format);
                 expenses = expenseRepository.findAllExpensesByHostelIdAndTimePeriod(
@@ -73,7 +74,7 @@ public class ExpenseService {
                         startDate,
                         endDate,
                         pageable);
-            } else if(timePeriod.equalsIgnoreCase(ErrorConstants.TIME_PERIOD_CURRENT_MONTH)) {
+            } else if (timePeriod.equalsIgnoreCase(ErrorConstants.TIME_PERIOD_CURRENT_MONTH)) {
                 String startDate = now.with(TemporalAdjusters.firstDayOfMonth()).format(format);
                 expenses = expenseRepository.findAllExpensesByHostelIdAndTimePeriod(
                         hostelId,
@@ -84,12 +85,12 @@ public class ExpenseService {
                 response.setErrors(List.of(new Error("INVALID_TIME_PERIOD", ErrorConstants.INVALID_TIME_PERIOD)));
             }
 
-            if(expenses != null) {
+            if (expenses != null) {
                 List<ExpenseDto> expenseDtos = expenses.stream().map(expense -> objectMapper.convertValue(expense, ExpenseDto.class)).toList();
                 response.setData(expenseDtos);
             }
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }
@@ -97,7 +98,7 @@ public class ExpenseService {
     public Response<ExpenseDto> modifyExpenseDetails(Long id, ExpenseDto expenseDto, Response<ExpenseDto> response) {
         try {
             Optional<Expense> expenseOptional = expenseRepository.findById(id);
-            if(expenseOptional.isPresent()) {
+            if (expenseOptional.isPresent()) {
                 Expense expense = expenseOptional.get();
                 expense.setExpenseType(expenseDto.getExpenseType());
                 expense.setDate(expenseDto.getDate());
@@ -110,7 +111,7 @@ public class ExpenseService {
                 response.setErrors(List.of(new Error("ERROR_EXPENSE_NOT_FOUND", ErrorConstants.ERROR_EXPENSE_NOT_FOUND + id)));
             }
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }
@@ -120,7 +121,7 @@ public class ExpenseService {
             expenseRepository.deleteById(id);
             response.setData("Expense details deleted successfully with the given id of " + id);
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }

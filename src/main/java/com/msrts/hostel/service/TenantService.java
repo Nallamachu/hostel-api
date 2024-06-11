@@ -35,19 +35,19 @@ public class TenantService {
 
     public Response<TenantDto> createTenant(TenantDto tenantDto, Response<TenantDto> response) {
         try {
-            if(tenantDto.getRoom() != null && tenantDto.getRoom().getId()!=null) {
+            if (tenantDto.getRoom() != null && tenantDto.getRoom().getId() != null) {
                 Optional<Room> room = roomRepository.findById(tenantDto.getRoom().getId());
-                if(room.isEmpty()) {
+                if (room.isEmpty()) {
                     response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID + " for Room")));
                     return response;
                 }
 
                 Number activeTenantsCount = tenantRepository.activeTenantCountByRoomId(room.get().getId());
-                if(activeTenantsCount != null && room.get().getCapacity() > activeTenantsCount.longValue()) {
-                        Tenant tenant = objectMapper.convertValue(tenantDto, Tenant.class);
-                        tenant = tenantRepository.save(tenant);
-                        tenantDto = objectMapper.convertValue(tenant, TenantDto.class);
-                        response.setData(tenantDto);
+                if (activeTenantsCount != null && room.get().getCapacity() > activeTenantsCount.longValue()) {
+                    Tenant tenant = objectMapper.convertValue(tenantDto, Tenant.class);
+                    tenant = tenantRepository.save(tenant);
+                    tenantDto = objectMapper.convertValue(tenant, TenantDto.class);
+                    response.setData(tenantDto);
 
                 } else {
                     response.setErrors(List.of(new Error("ERROR_ROOM_IS_FULL", ErrorConstants.ERROR_ROOM_IS_FULL)));
@@ -58,7 +58,7 @@ public class TenantService {
                 return response;
             }
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }
@@ -66,14 +66,14 @@ public class TenantService {
     public Response<List<TenantDto>> getAllActiveTenantsByHostelId(Long hostelId, Pageable pageable, Response<List<TenantDto>> response) {
         try {
             Page<Tenant> tenants = tenantRepository.findAllActiveTenantsByHostelId(hostelId, pageable);
-            if(!tenants.isEmpty()) {
+            if (!tenants.isEmpty()) {
                 List<TenantDto> tenantDtoList = tenants.stream()
                         .map(tenant -> objectMapper.convertValue(tenant, TenantDto.class))
                         .toList();
                 response.setData(tenantDtoList);
             }
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }
@@ -81,12 +81,12 @@ public class TenantService {
     public Response<List<TenantDto>> getTenantsByNameContains(String name, Response<List<TenantDto>> response, Pageable pageable) {
         try {
             Page<Tenant> tenants = tenantRepository.findAllTenantsByGivenNameContains(name, name, name, pageable);
-            if(!tenants.isEmpty()) {
+            if (!tenants.isEmpty()) {
                 List<TenantDto> tenantDtoList = tenants.stream().map(tenant -> objectMapper.convertValue(tenant, TenantDto.class)).toList();
                 response.setData(tenantDtoList);
             }
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }
@@ -94,12 +94,12 @@ public class TenantService {
     public Response<List<TenantDto>> getTenantsByGovernmentIdNumber(String idNumber, Response<List<TenantDto>> response, Pageable pageable) {
         try {
             Page<Tenant> tenants = tenantRepository.findAllTenantsByGivenIdNumber(idNumber, pageable);
-            if(!tenants.isEmpty()) {
+            if (!tenants.isEmpty()) {
                 List<TenantDto> tenantDtoList = tenants.stream().map(tenant -> objectMapper.convertValue(tenant, TenantDto.class)).toList();
                 response.setData(tenantDtoList);
             }
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }
@@ -107,7 +107,7 @@ public class TenantService {
     public Response<TenantDto> modifyTenant(Long id, TenantDto tenantDto, Response<TenantDto> response) {
         try {
             Optional<Tenant> optionalTenant = tenantRepository.findById(id);
-            if(optionalTenant.isPresent()) {
+            if (optionalTenant.isPresent()) {
                 Tenant tenant = getTenant(tenantDto, optionalTenant.get());
                 tenant = tenantRepository.save(tenant);
                 tenantDto = objectMapper.convertValue(tenant, TenantDto.class);
@@ -116,7 +116,7 @@ public class TenantService {
                 response.setErrors(List.of(new Error("ERROR_TENANT_NOT_FOUND", ErrorConstants.ERROR_TENANT_NOT_FOUND)));
             }
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }
@@ -139,7 +139,7 @@ public class TenantService {
     public Response<String> deleteTenantById(Long id, Response<String> response) {
         try {
             Optional<Tenant> optionalTenant = tenantRepository.findById(id);
-            if(optionalTenant.isPresent()) {
+            if (optionalTenant.isPresent()) {
                 Tenant tenant = optionalTenant.get();
                 tenant.setActive(false);
                 tenantRepository.save(tenant);
@@ -148,15 +148,15 @@ public class TenantService {
                 response.setErrors(List.of(new Error("ERROR_TENANT_NOT_FOUND", ErrorConstants.ERROR_TENANT_NOT_FOUND + id)));
             }
         } catch (RuntimeException ex) {
-            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION",ex.getMessage())));
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
     }
 
     private String getTenantFullName(Tenant tenant) {
         String fullName = tenant.getFirstName();
-        fullName = fullName + (tenant.getMiddleName() != null ? " " + tenant.getMiddleName():"");
-        fullName = fullName + (tenant.getLastName() != null ? " " + tenant.getLastName():"");
+        fullName = fullName + (tenant.getMiddleName() != null ? " " + tenant.getMiddleName() : "");
+        fullName = fullName + (tenant.getLastName() != null ? " " + tenant.getLastName() : "");
         return fullName;
     }
 

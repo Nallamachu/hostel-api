@@ -18,16 +18,16 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/api/v1/room")
 @RequiredArgsConstructor
-@CrossOrigin(exposedHeaders="Access-Control-Allow-Origin")
+@CrossOrigin(exposedHeaders = "Access-Control-Allow-Origin")
 public class RoomController {
     @Autowired
     private RoomService roomService;
 
     @GetMapping(path = "/rooms-by-hostel-id", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response<List<RoomDto>> getAllRoomsByHostelId(@RequestParam(required = true) Long hostelId,
-                                                               @RequestParam(defaultValue = "0") int page,
-                                                               @RequestParam(defaultValue = "10") int size,
-                                                               @RequestParam(defaultValue = "id") String[] sort) {
+                                                         @RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "10") int size,
+                                                         @RequestParam(defaultValue = "id") String[] sort) {
         Response<List<RoomDto>> response = new Response<>();
         Pageable pagingSort = PageRequest.of(page, size, Sort.by(sort));
         if (hostelId == 0 || hostelId < 0) {
@@ -40,7 +40,7 @@ public class RoomController {
     @PostMapping(path = "/create-room", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Response<RoomDto> createRoom(@RequestBody RoomDto roomDto) {
         Response<RoomDto> response = new Response<>();
-        if(roomDto==null) {
+        if (roomDto == null) {
             response.setErrors(List.of(new Error("INVALID_REQUEST", ErrorConstants.INVALID_REQUEST)));
             return response;
         }
@@ -50,7 +50,7 @@ public class RoomController {
     @PutMapping(path = "/modify-room/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Response<RoomDto> modifyRoom(@PathVariable("id") Long id, @RequestBody RoomDto roomDto) {
         Response<RoomDto> response = new Response<>();
-        if(id== null || roomDto==null) {
+        if (id == null || roomDto == null) {
             response.setErrors(List.of(new Error("INVALID_REQUEST", ErrorConstants.INVALID_REQUEST)));
             return response;
         }
@@ -61,8 +61,8 @@ public class RoomController {
     @DeleteMapping(path = "/delete-room-by-id/{id}")
     public Response<String> deleteRoomById(@PathVariable(value = "id") Long id) {
         Response<String> response = new Response<>();
-        if(id == null) {
-            response.setErrors(List.of(new Error("INVALID_INPUT_ID",ErrorConstants.INVALID_INPUT_ID)));
+        if (id == null) {
+            response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID)));
             return response;
         }
         return roomService.deleteRoomById(id, response);
