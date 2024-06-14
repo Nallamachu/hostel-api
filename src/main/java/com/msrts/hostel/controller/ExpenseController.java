@@ -64,7 +64,6 @@ public class ExpenseController {
         }
 
         return expenseService.getAllExpensesByTimePeriod(hostelId, timePeriod, response, pageable);
-
     }
 
     @PutMapping(path = "modify-expense/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -85,7 +84,6 @@ public class ExpenseController {
             response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID)));
             return response;
         }
-
         return expenseService.deleteExpenseById(id, response);
     }
 

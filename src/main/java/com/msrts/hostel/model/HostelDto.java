@@ -21,7 +21,7 @@ public class HostelDto {
     @NotBlank(message = "Hostel type should be Men/Women/Co-live")
     private String type;
     private boolean isActive;
-    private Set<Room> rooms;
+    private Set<RoomDto> rooms;
     @NotNull(message = "Hostel address should be not null")
     private AddressDto address;
     @NotNull(message = "Hostel owner should be not null")

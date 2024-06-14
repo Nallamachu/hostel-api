@@ -3,6 +3,7 @@ package com.msrts.hostel.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.msrts.hostel.entity.Address;
 import com.msrts.hostel.entity.Hostel;
+import com.msrts.hostel.entity.Room;
 import com.msrts.hostel.entity.User;
 import com.msrts.hostel.exception.ErrorConstants;
 import com.msrts.hostel.model.Error;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class HostelService {
@@ -91,7 +93,7 @@ public class HostelService {
                 hostel.setName(hostelDto.getName());
                 hostel.setType(hostelDto.getType());
                 hostel.setActive(hostelDto.isActive());
-                hostel.setRooms(hostelDto.getRooms());
+                hostel.setRooms(hostelDto.getRooms().stream().map(roomDto -> new Room(roomDto.getId())).collect(Collectors.toSet()));
                 hostel.setOwner(hostelDto.getOwner());
                 hostel.setAddress(objectMapper.convertValue(hostelDto.getAddress(), Address.class));
                 hostel = hostelRepository.save(hostel);

@@ -36,4 +36,7 @@ public class Room {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Hostel hostel;
 
+    public Room(Long id) {
+        this.id = id;
+    }
 }
