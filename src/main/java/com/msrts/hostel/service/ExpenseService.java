@@ -60,6 +60,24 @@ public class ExpenseService {
         return response;
     }
 
+    public Response<List<ExpenseDto>> getExpensesByUserId(Long userId, Response<List<ExpenseDto>> response) {
+        try {
+            YearMonth yearMonth = YearMonth.now();
+            List<Expense> expenses = expenseRepository.findAllExpensesByUserIdAndTimePeriod(
+                    userId,
+                    LocalDate.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), 1),
+                    LocalDate.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), yearMonth.atEndOfMonth().getDayOfMonth())
+            );
+            if (!expenses.isEmpty()) {
+                List<ExpenseDto> expenseDtos = expenses.stream().map(expense -> objectMapper.convertValue(expense, ExpenseDto.class)).toList();
+                response.setData(expenseDtos);
+            }
+        } catch (RuntimeException ex) {
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
+        }
+        return response;
+    }
+
     /*
      *   Time period can be LAST_MONTH, CURRENT_MONTH
      */
@@ -70,15 +88,15 @@ public class ExpenseService {
                 YearMonth yearMonth = YearMonth.now().minusMonths(1);
                 expenses = expenseRepository.findAllExpensesByHostelIdAndTimePeriod(
                         hostelId,
-                        LocalDateTime.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), 1, 0, 0, 0),
-                        LocalDateTime.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), yearMonth.atEndOfMonth().getDayOfMonth(), 23, 59, 59),
+                        LocalDate.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), 1),
+                        LocalDate.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), yearMonth.atEndOfMonth().getDayOfMonth()),
                         pageable);
             } else if (timePeriod.equalsIgnoreCase(ErrorConstants.TIME_PERIOD_CURRENT_MONTH)) {
                 YearMonth yearMonth = YearMonth.now();
                 expenses = expenseRepository.findAllExpensesByHostelIdAndTimePeriod(
                         hostelId,
-                        LocalDateTime.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), 1, 0, 0, 0),
-                        LocalDateTime.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), yearMonth.atEndOfMonth().getDayOfMonth(), 23, 59, 59),
+                        LocalDate.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), 1),
+                        LocalDate.of(yearMonth.getYear(), yearMonth.getMonth().getValue(), yearMonth.atEndOfMonth().getDayOfMonth()),
                         pageable);
             } else {
                 response.setErrors(List.of(new Error("INVALID_TIME_PERIOD", ErrorConstants.INVALID_TIME_PERIOD)));

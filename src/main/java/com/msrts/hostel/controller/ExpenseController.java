@@ -50,6 +50,18 @@ public class ExpenseController {
 
     }
 
+    @GetMapping(path = "/find-all-expenses-by-user-id", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response<List<ExpenseDto>> getAllExpensesByUserId(@RequestParam(required = true) Long userId) {
+        Response<List<ExpenseDto>> response = new Response<>();
+        if (userId == 0 || userId < 0) {
+            response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID)));
+            return response;
+        }
+
+        return expenseService.getExpensesByUserId(userId, response);
+
+    }
+
     @GetMapping(path = "/find-all-expenses-by-hostel-id-and-time-period", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response<List<ExpenseDto>> getAllExpensesByHostelIdAndTimePeriod(@RequestParam(required = true) Long hostelId,
                                                                             @RequestParam(defaultValue = "CURRENT_MONTH", required = true) String timePeriod,
