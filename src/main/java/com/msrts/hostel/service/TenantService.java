@@ -78,6 +78,21 @@ public class TenantService {
         return response;
     }
 
+    public Response<List<TenantDto>> getAllActiveTenantsByUserId(Long userId, Response<List<TenantDto>> response) {
+        try {
+            List<Tenant> tenants = tenantRepository.findAllActiveTenantsByUserId(userId);
+            if (!tenants.isEmpty()) {
+                List<TenantDto> tenantDtoList = tenants.stream()
+                        .map(tenant -> objectMapper.convertValue(tenant, TenantDto.class))
+                        .toList();
+                response.setData(tenantDtoList);
+            }
+        } catch (RuntimeException ex) {
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
+        }
+        return response;
+    }
+
     public Response<List<TenantDto>> getTenantsByNameContains(String name, Response<List<TenantDto>> response, Pageable pageable) {
         try {
             Page<Tenant> tenants = tenantRepository.findAllTenantsByGivenNameContains(name, name, name, pageable);

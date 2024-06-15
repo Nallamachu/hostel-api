@@ -52,6 +52,19 @@ public class RoomService {
         return response;
     }
 
+    public Response<List<RoomDto>> findAllRoomsByUserId(Long userId, Response<List<RoomDto>> response, Pageable pageable) {
+        try {
+            Page<Room> rooms = roomRepository.findAllRoomsIdByUserId(userId, pageable);
+            if (!rooms.isEmpty()) {
+                List<RoomDto> roomDtos = rooms.stream().map(room -> objectMapper.convertValue(room, RoomDto.class)).toList();
+                response.setData(roomDtos);
+            }
+        } catch (RuntimeException ex) {
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
+        }
+        return response;
+    }
+
     public Response<String> deleteRoomById(Long roomId, Response<String> response) {
         try {
             Optional<Room> optionalRoom = roomRepository.findById(roomId);

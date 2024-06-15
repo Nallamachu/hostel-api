@@ -29,4 +29,14 @@ public interface TenantRepository extends JpaRepository<Tenant, Long> {
             and t.room_id in (select r.id from room r where r.hostel_id = ?1)
             """, nativeQuery = true)
     Page<Tenant> findAllActiveTenantsByHostelId(Long hostelId, Pageable pageable);
+
+    @Query(value = """
+            select t.* from tenant t 
+            where t.is_active = true 
+            and t.room_id in (
+            select r.id from room r where r.hostel_id in (
+            select distinct h.id from hostel h where h.owner_id= ?1 and is_active=true))
+            order by t.room_id
+            """, nativeQuery = true)
+    List<Tenant> findAllActiveTenantsByUserId(Long userId);
 }

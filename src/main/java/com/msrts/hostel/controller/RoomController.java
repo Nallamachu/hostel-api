@@ -37,6 +37,20 @@ public class RoomController {
         return roomService.findAllRoomsByHostelId(hostelId, response, pagingSort);
     }
 
+    @GetMapping(path = "/rooms-by-user-id", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response<List<RoomDto>> getAllRoomsByUserId(@RequestParam(required = true) Long userId,
+                                                         @RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "10") int size,
+                                                         @RequestParam(defaultValue = "id") String[] sort) {
+        Response<List<RoomDto>> response = new Response<>();
+        Pageable pagingSort = PageRequest.of(page, size, Sort.by(sort));
+        if (userId == 0 || userId < 0) {
+            response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID)));
+            return response;
+        }
+        return roomService.findAllRoomsByUserId(userId, response, pagingSort);
+    }
+
     @PostMapping(path = "/create-room", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Response<RoomDto> createRoom(@RequestBody RoomDto roomDto) {
         Response<RoomDto> response = new Response<>();

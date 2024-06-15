@@ -52,6 +52,20 @@ public class TenantController {
         return tenantService.getAllActiveTenantsByHostelId(hostelId, pagingSort, response);
     }
 
+    @GetMapping(path = "/tenants-by-user-id", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response<List<TenantDto>> getAllTenantsByUserId(@RequestParam(required = true) Long userId) {
+        LOGGER.info("Start of getAllActiveTenantsByUserId"+ userId);
+        Response<List<TenantDto>> response = new Response<>();
+        if (userId == 0 || userId < 0) {
+            response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID)));
+            return response;
+        }
+
+        LOGGER.info("Calling service of getAllActiveTenantsByUserId");
+        return tenantService.getAllActiveTenantsByUserId(userId, response);
+    }
+
+
     @GetMapping(path = "/search-tenant-by-name-or-government-id-number", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response<List<TenantDto>> searchTenantByNameOrGovernmentProof(@RequestParam(required = false) String name,
                                                                          @RequestParam(required = false) String idNumber,
