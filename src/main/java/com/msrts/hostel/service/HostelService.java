@@ -56,6 +56,28 @@ public class HostelService {
         return response;
     }
 
+    public Response<List<HostelDto>> findAllHostelsByUserIdNoPagination(Response<List<HostelDto>> response, Integer userId) {
+        //log.info("Start of finding all hostels by current logged in user id");
+        try {
+            if (validateUser(userId)) {
+                //log.error(ErrorConstants.ERROR_USER_NOT_FOUND);
+                Error error = new Error("ERROR_USER_NOT_FOUND", ErrorConstants.ERROR_USER_NOT_FOUND);
+                response.setErrors(List.of(error));
+                return response;
+            }
+
+            List<Hostel> hostelList = hostelRepository.findAllHostelsByUser(userId);
+            if (hostelList != null && !hostelList.isEmpty()) {
+                List<HostelDto> hostelDtos = hostelList.stream()
+                        .map(hostel -> objectMapper.convertValue(hostel, HostelDto.class)).toList();
+                response.setData(hostelDtos);
+            }
+        } catch (RuntimeException ex) {
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
+        }
+        return response;
+    }
+
     public Response<HostelDto> createHostel(Response<HostelDto> response, HostelDto hostelDto) {
         //log.info("Start of creating new hostel");
         try {

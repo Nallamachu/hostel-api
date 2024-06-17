@@ -23,7 +23,7 @@ public class HostelController {
     @Autowired
     private HostelService hostelService;
 
-    @GetMapping(path = "/find-all-hostels-by-user", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/find-all-hostels-by-user-id", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response<List<HostelDto>> getAllHostelsByUserId(@RequestParam Integer userId,
                                                            @RequestParam(defaultValue = "0") int page,
                                                            @RequestParam(defaultValue = "10") int size,
@@ -35,6 +35,16 @@ public class HostelController {
             return response;
         }
         return hostelService.findAllHostelsByUserId(response, userId, pagingSort);
+    }
+
+    @GetMapping(path = "/find-all-hostels-by-user-no-pagination", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response<List<HostelDto>> getAllHostelsByUser(@RequestParam Integer userId) {
+        Response<List<HostelDto>> response = new Response<>();
+        if (userId == 0 || userId < 0) {
+            response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID)));
+            return response;
+        }
+        return hostelService.findAllHostelsByUserIdNoPagination(response, userId);
     }
 
     @PostMapping(path = "/create-hostel", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
