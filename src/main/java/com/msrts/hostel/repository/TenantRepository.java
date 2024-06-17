@@ -20,8 +20,8 @@ public interface TenantRepository extends JpaRepository<Tenant, Long> {
     @Query(value = "select count(*) from Tenant t where t.room_id=?1 and t.is_active=true", nativeQuery = true)
     Number activeTenantCountByRoomId(Long roomId);
 
-    @Query(value = "from Tenant t where t.room.id in (?1)")
-    Page<Tenant> findAllTenantsByRoomIdsIn(List<Long> roomIds, Pageable pageable);
+    @Query(value = "select * from Tenant t where t.room_id = ?1 and t.is_active=true", nativeQuery = true)
+    List<Tenant> findAllTenantsByRoomId(Long roomId);
 
     @Query(value = """
             select t.* from tenant t 
