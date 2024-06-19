@@ -135,8 +135,7 @@ public class HostelService {
             Optional<Hostel> optionalHostel = hostelRepository.findById(id);
             if (optionalHostel.isPresent()) {
                 Hostel hostel = optionalHostel.get();
-                hostel.setActive(false);
-                hostelRepository.save(hostel);
+                hostelRepository.delete(hostel);
                 response.setData(hostel.getName() + " hostel deleted successfully");
             } else {
                 response.setErrors(List.of(new Error("ERROR_HOSTEL_NOT_FOUND", ErrorConstants.ERROR_HOSTEL_NOT_FOUND)));
