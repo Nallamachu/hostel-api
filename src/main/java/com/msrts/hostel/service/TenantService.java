@@ -190,4 +190,18 @@ public class TenantService {
         return fullName;
     }
 
+    public Response<List<TenantDto>> getAllActiveTenantsByRoomNo(Long roomNo, Response<List<TenantDto>> response) {
+        try {
+            List<Tenant> tenants = tenantRepository.findAllTenantsByRoomNo(roomNo);
+            if (!tenants.isEmpty()) {
+                List<TenantDto> tenantDtoList = tenants.stream()
+                        .map(tenant -> objectMapper.convertValue(tenant, TenantDto.class))
+                        .toList();
+                response.setData(tenantDtoList);
+            }
+        } catch (RuntimeException ex) {
+            response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
+        }
+        return response;
+    }
 }

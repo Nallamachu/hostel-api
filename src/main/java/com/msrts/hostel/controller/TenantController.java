@@ -78,6 +78,19 @@ public class TenantController {
         return tenantService.getAllActiveTenantsByRoomId(roomId, response);
     }
 
+    @GetMapping(path = "/tenants-by-room-no", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response<List<TenantDto>> getAllTenantsByRoomNo(@RequestParam(required = true) Long roomNo) {
+        LOGGER.info("Start of getAllTenantsByRoomNo"+ roomNo);
+        Response<List<TenantDto>> response = new Response<>();
+        if (roomNo == 0 || roomNo < 0) {
+            response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID)));
+            return response;
+        }
+
+        LOGGER.info("Calling service of getAllTenantsByRoomNo");
+        return tenantService.getAllActiveTenantsByRoomNo(roomNo, response);
+    }
+
     @GetMapping(path = "/search-tenant-by-name-or-government-id-number", produces = MediaType.APPLICATION_JSON_VALUE)
     public Response<List<TenantDto>> searchTenantByNameOrGovernmentProof(@RequestParam(required = false) String name,
                                                                          @RequestParam(required = false) String idNumber,

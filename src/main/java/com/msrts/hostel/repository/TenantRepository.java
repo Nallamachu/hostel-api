@@ -39,4 +39,11 @@ public interface TenantRepository extends JpaRepository<Tenant, Long> {
             order by t.room_id
             """, nativeQuery = true)
     List<Tenant> findAllActiveTenantsByUserId(Long userId);
+
+    @Query(value = """
+            select * from Tenant t where t.room_id = (
+            select distinct r.id from room r where r.room_no=?1
+            ) and t.is_active=true
+            """, nativeQuery = true)
+    List<Tenant> findAllTenantsByRoomNo(Long roomNo);
 }
