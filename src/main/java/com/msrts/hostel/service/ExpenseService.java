@@ -120,7 +120,7 @@ public class ExpenseService {
                 expense.setExpenseType(expenseDto.getExpenseType());
                 expense.setDate(expenseDto.getDate());
                 expense.setAmount(expenseDto.getAmount());
-                expense.setDescription(expense.getDescription());
+                expense.setDescription(expenseDto.getDescription());
                 expense = expenseRepository.save(expense);
                 expenseDto = objectMapper.convertValue(expense, ExpenseDto.class);
                 response.setData(expenseDto);
