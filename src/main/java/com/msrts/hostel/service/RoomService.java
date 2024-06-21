@@ -8,6 +8,7 @@ import com.msrts.hostel.exception.ErrorConstants;
 import com.msrts.hostel.model.Error;
 import com.msrts.hostel.model.Response;
 import com.msrts.hostel.model.RoomDto;
+import com.msrts.hostel.model.TenantDto;
 import com.msrts.hostel.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class RoomService {
@@ -95,7 +97,7 @@ public class RoomService {
                 room.setRoomNo(roomDto.getRoomNo());
                 room.setCapacity(roomDto.getCapacity());
                 room.setFloorNo(roomDto.getFloorNo());
-                room.setTenants(roomDto.getTenants());
+                room.setTenants(getTenantsSet(roomDto.getTenants()));
                 room.setHostel(new Hostel(roomDto.getHostel().getId()));
                 room = roomRepository.save(room);
                 roomDto = objectMapper.convertValue(room, RoomDto.class);
@@ -107,5 +109,9 @@ public class RoomService {
             response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
         }
         return response;
+    }
+
+    private Set<Tenant> getTenantsSet(Set<TenantDto> tenantDtoSet){
+        return tenantDtoSet.stream().map(tenantDto -> objectMapper.convertValue(tenantDto, Tenant.class)).collect(Collectors.toSet());
     }
 }

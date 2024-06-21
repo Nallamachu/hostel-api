@@ -20,7 +20,7 @@ public class RoomDto {
     private Long floorNo;
     @Size(min = 1, max = 10, message = "Capacity range should be between 1 to 10")
     private Long capacity;
-    private Set<Tenant> tenants;
+    private Set<TenantDto> tenants;
     @NotNull(message = "Hostel should not be null")
     private HostelDto hostel;
 }

@@ -53,6 +53,6 @@ public class TenantDto {
     @NotNull(message = "Tenant address should not be null")
     private Address address;
     @NotNull(message = "Tenant room no should not be null")
-    private Room room;
-    private Set<Payment> payments;
+    private RoomDto room;
+    private Set<PaymentDto> payments;
 }

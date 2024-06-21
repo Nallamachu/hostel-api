@@ -33,5 +33,5 @@ public class ExpenseDto {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime date;
     @NotNull(message = "Select the valid hostel to create expense record")
-    private Hostel hostel;
+    private HostelDto hostel;
 }

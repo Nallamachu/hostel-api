@@ -6,6 +6,7 @@ import com.msrts.hostel.entity.Tenant;
 import com.msrts.hostel.exception.ErrorConstants;
 import com.msrts.hostel.model.Error;
 import com.msrts.hostel.model.Response;
+import com.msrts.hostel.model.RoomDto;
 import com.msrts.hostel.model.TenantDto;
 import com.msrts.hostel.repository.HostelRepository;
 import com.msrts.hostel.repository.RoomRepository;
@@ -151,7 +152,7 @@ public class TenantService {
         return response;
     }
 
-    private static Tenant getTenant(TenantDto tenantDto, Tenant tenant) {
+    private Tenant getTenant(TenantDto tenantDto, Tenant tenant) {
         tenant.setFirstName(tenantDto.getFirstName());
         tenant.setMiddleName(tenantDto.getMiddleName());
         tenant.setLastName(tenantDto.getLastName());
@@ -160,10 +161,14 @@ public class TenantService {
         tenant.setExitDate(tenantDto.getExitDate());
         tenant.setIdNumber(tenantDto.getIdNumber());
         tenant.setIdType(tenantDto.getIdType());
-        tenant.setRoom(tenantDto.getRoom());
+        tenant.setRoom(getRoomObject(tenantDto.getRoom()));
         tenant.setActive(tenantDto.isActive());
         tenant.setAddress(tenantDto.getAddress());
         return tenant;
+    }
+
+    private Room getRoomObject(RoomDto roomDto){
+        return objectMapper.convertValue(roomDto, Room.class);
     }
 
     public Response<String> deleteTenantById(Long id, Response<String> response) {

@@ -79,7 +79,7 @@ public class ExpenseController {
     }
 
     @PutMapping(path = "modify-expense/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response<ExpenseDto> modifyExpenseById(@PathVariable("id") Long id, ExpenseDto expenseDto) {
+    public Response<ExpenseDto> modifyExpenseById(@PathVariable("id") Long id, @RequestBody ExpenseDto expenseDto) {
         Response<ExpenseDto> response = new Response<>();
         if (id == null || id >= 0 || expenseDto == null) {
             response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID)));
