@@ -67,9 +67,9 @@ public class PaymentController {
     }
 
     @PutMapping(path = "modify-payment/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response<PaymentDto> modifyPaymentById(@PathVariable("id") Long id, PaymentDto paymentDto) {
+    public Response<PaymentDto> modifyPaymentById(@PathVariable("id") Long id, @RequestBody PaymentDto paymentDto) {
         Response<PaymentDto> response = new Response<>();
-        if (id == null || id >= 0 || paymentDto == null) {
+        if (id == null || id <= 0 || paymentDto == null) {
             response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID)));
             return response;
         }

@@ -2,6 +2,7 @@ package com.msrts.hostel.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.msrts.hostel.entity.Payment;
+import com.msrts.hostel.entity.Tenant;
 import com.msrts.hostel.exception.ErrorConstants;
 import com.msrts.hostel.model.Error;
 import com.msrts.hostel.model.PaymentDto;
@@ -104,19 +105,33 @@ public class PaymentService {
         return response;
     }
 
+    @Transactional
     public Response<PaymentDto> modifyPayment(Long id, PaymentDto paymentDto, Response<PaymentDto> response) {
         try {
             Optional<Payment> optionalPayment = paymentRepository.findById(id);
             if (optionalPayment.isPresent()) {
-                Payment payment = optionalPayment.get();
-                payment.setPaymentType(paymentDto.getPaymentType());
-                payment.setAmount(paymentDto.getAmount());
-                payment.setStartDate(paymentDto.getStartDate());
-                payment.setEndDate(paymentDto.getEndDate());
-                payment.setTransactionType(paymentDto.getTransactionType());
-                payment = paymentRepository.save(payment);
-                paymentDto = objectMapper.convertValue(payment, PaymentDto.class);
-                response.setData(paymentDto);
+                if(paymentDto.getTenant()==null) {
+                    response.setErrors(Arrays.asList(new Error("ERROR_TENANT_NOT_FOUND", ErrorConstants.ERROR_TENANT_NOT_FOUND)));
+                    return response;
+                }
+
+                Response<TenantDto> tenantDtoResponse = tenantService.modifyTenant(
+                        paymentDto.getTenant().getId(), paymentDto.getTenant(),new Response<>());
+                if(tenantDtoResponse.getErrors()!=null){
+                    response.setErrors(Arrays.asList(new Error("ERROR_TENANT_NOT_SAVED", ErrorConstants.ERROR_TENANT_NOT_SAVED)));
+                    return response;
+                } else {
+                    Payment payment = optionalPayment.get();
+                    payment.setPaymentType(paymentDto.getPaymentType());
+                    payment.setAmount(paymentDto.getAmount());
+                    payment.setPaymentDate(paymentDto.getPaymentDate());
+                    payment.setTransactionType(paymentDto.getTransactionType());
+                    payment.setTenant(objectMapper.convertValue(tenantDtoResponse.getData(), Tenant.class));
+                    payment = paymentRepository.save(payment);
+                    paymentDto = objectMapper.convertValue(payment, PaymentDto.class);
+                    response.setData(paymentDto);
+                }
+
             } else {
                 response.setErrors(List.of(new Error("ERROR_PAYMENT_NOT_FOUND", ErrorConstants.ERROR_PAYMENT_NOT_FOUND + id)));
             }

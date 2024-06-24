@@ -33,7 +33,7 @@ public class SecurityConfiguration {
             "/api/v1/room/**",
             "/api/v1/tenant/**",
             "/api/v1/expense/**",
-            "/api/v1/payment]/**",
+            "/api/v1/payment/**",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",

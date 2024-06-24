@@ -16,6 +16,7 @@ public class ErrorConstants {
     public static final String ERROR_ROOM_NOT_EMPTY = "Can not delete room due to room is not empty";
     public static final String ERROR_ROOM_IS_FULL = "Selected room is not valid or Room is occupied fully";
     public static final String ERROR_TENANT_NOT_FOUND = "Tenant does not exists with given id ";
+    public static final String ERROR_TENANT_NOT_SAVED = "Error while saving tenant from payment ";
     public static final String ERROR_NAME_OR_ID_NUMBER_MANDATORY = "Either Name or Government ID number is mantory";
     public static final String ERROR_PAYMENT_NOT_FOUND = "Payment does not exists with given id ";
     public static final String ERROR_EXPENSE_NOT_FOUND = "Expense does not exists with given id ";
