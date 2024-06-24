@@ -39,11 +39,25 @@ public class PaymentService {
                 response.setErrors(List.of(new Error("INVALID_AMOUNT", ErrorConstants.INVALID_AMOUNT)));
                 return response;
             }
-            Payment payment = objectMapper.convertValue(paymentDto, Payment.class);
-            payment = paymentRepository.save(payment);
-            if (payment.getId() != null) {
-                paymentDto = objectMapper.convertValue(payment, PaymentDto.class);
-                response.setData(paymentDto);
+
+            if(paymentDto.getTenant()==null) {
+                response.setErrors(Arrays.asList(new Error("ERROR_TENANT_NOT_FOUND", ErrorConstants.ERROR_TENANT_NOT_FOUND)));
+                return response;
+            }
+
+            Response<TenantDto> tenantDtoResponse = tenantService.modifyTenant(
+                    paymentDto.getTenant().getId(), paymentDto.getTenant(),new Response<>());
+            if(tenantDtoResponse.getErrors()!=null){
+                response.setErrors(Arrays.asList(new Error("ERROR_TENANT_NOT_SAVED", ErrorConstants.ERROR_TENANT_NOT_SAVED)));
+                return response;
+            } else {
+                Payment payment = objectMapper.convertValue(paymentDto, Payment.class);
+                payment.setTenant(objectMapper.convertValue(tenantDtoResponse.getData(), Tenant.class));
+                payment = paymentRepository.save(payment);
+                if (payment.getId() != null) {
+                    paymentDto = objectMapper.convertValue(payment, PaymentDto.class);
+                    response.setData(paymentDto);
+                }
             }
         } catch (RuntimeException ex) {
             response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));
