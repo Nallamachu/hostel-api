@@ -35,6 +35,33 @@ spring:
 ```
 You should create the database with the name of hostel(it can be any name) in MySQL environment. if you want to create with different name, it needs to be updated in the above url property.
 
+## Docker deployment commands
+1. Pull MYSQL image
+```dockerfile
+docker pull mysql
+```
+2. Create MySQL Container and Run
+```dockerfile
+docker run -p 3307:3306 --name mysqlcontainer -e MYSQL_ROOT_PASSWORD=MySQL123 -e MYSQL_DATABASE=hostel -d mysql
+```
+3. Create docker network for MySQL
+```dockerfile
+docker network create networkmysql
+```
+4. Connect MySQL network with MySQL container
+```dockerfile
+docker network connect networkmysql mysqlcontainer
+```
+5. Build spring-boot application image
+```dockerfile
+docker build -t hostel-api-image .
+```
+6. Create spring-boot application container and run it.
+```dockerfile
+docker run -p 8090:8080 --name hostel-api-container --net networkmysql -e MYSQL_HOST=mysqlcontainer -e MYSQL_PORT=3306 -e MYSQL_DB_NAME=hostel -e MYSQL_USER=root -e MYSQL_PASSWORD=MySQL123 hostel-api-image
+```
+
+
 ## MySQL command to create database
 ```dtd
 create database hostel

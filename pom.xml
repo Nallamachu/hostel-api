@@ -8,9 +8,9 @@
         <version>3.1.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.msts.hostel</groupId>
+    <groupId>com.msrts.hostel</groupId>
     <artifactId>hostel-management</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0-RELEASE</version>
     <name>hostel management</name>
     <description>Hostel Management Application with Spring Boot</description>
     <properties>

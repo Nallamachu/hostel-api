@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/hostel")
 @RequiredArgsConstructor
-@CrossOrigin(exposedHeaders = "Access-Control-Allow-Origin")
+@CrossOrigin(origins = "*", exposedHeaders = "Access-Control-Allow-Origin")
 public class HostelController {
     @Autowired
     private HostelService hostelService;

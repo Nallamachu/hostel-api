@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/api/v1/expense")
 @RequiredArgsConstructor
-@CrossOrigin(exposedHeaders = "Access-Control-Allow-Origin")
+@CrossOrigin(origins = "*", exposedHeaders = "Access-Control-Allow-Origin")
 public class ExpenseController {
 
     @Autowired

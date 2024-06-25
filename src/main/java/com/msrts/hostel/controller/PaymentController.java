@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/payment")
 @RequiredArgsConstructor
-@CrossOrigin(exposedHeaders = "Access-Control-Allow-Origin")
+@CrossOrigin(origins = "*", exposedHeaders = "Access-Control-Allow-Origin")
 public class PaymentController {
 
     @Autowired

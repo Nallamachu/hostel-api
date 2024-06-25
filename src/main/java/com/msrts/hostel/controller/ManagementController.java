@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/management")
 @Tag(name = "Management")
-@CrossOrigin
+@CrossOrigin(origins = "*", exposedHeaders = "Access-Control-Allow-Origin")
 public class ManagementController {
 
     @Operation(

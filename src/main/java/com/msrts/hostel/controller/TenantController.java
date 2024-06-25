@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/api/v1/tenant")
 @RequiredArgsConstructor
-@CrossOrigin(exposedHeaders = "Access-Control-Allow-Origin")
+@CrossOrigin(origins = "*", exposedHeaders = "Access-Control-Allow-Origin")
 public class TenantController {
     private static final Logger LOGGER = LoggerFactory.getLogger(TenantController.class);
     @Autowired
