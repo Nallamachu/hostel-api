@@ -24,26 +24,26 @@ public interface TenantRepository extends JpaRepository<Tenant, Long> {
     List<Tenant> findAllTenantsByRoomId(Long roomId);
 
     @Query(value = """
-            select t.* from tenant t 
-            where t.is_active = true 
-            and t.room_id in (select r.id from room r where r.hostel_id = ?1)
+            select t.* from tenant t\s
+            where t.is_active = true\s
+            and t.room_id in (select r.id from room r where r.hostel_id = ?1)\s
             """, nativeQuery = true)
     Page<Tenant> findAllActiveTenantsByHostelId(Long hostelId, Pageable pageable);
 
     @Query(value = """
-            select t.* from tenant t 
-            where t.is_active = true 
-            and t.room_id in (
-            select r.id from room r where r.hostel_id in (
-            select distinct h.id from hostel h where h.owner_id= ?1 and is_active=true))
-            order by t.room_id
+            select t.* from tenant t\s
+            where t.is_active = true\s
+            and t.room_id in (\s
+            select r.id from room r where r.hostel_id in (\s
+            select distinct h.id from hostel h where h.owner_id= ?1 and is_active=true))\s
+            order by t.room_id\s
             """, nativeQuery = true)
     List<Tenant> findAllActiveTenantsByUserId(Long userId);
 
     @Query(value = """
-            select * from Tenant t where t.room_id = (
-            select distinct r.id from room r where r.room_no=?1
-            ) and t.is_active=true
+            select * from tenant t where t.room_id = (\s
+            select distinct r.id from room r where r.room_no=?1\s
+            ) and t.is_active=true\s
             """, nativeQuery = true)
     List<Tenant> findAllTenantsByRoomNo(Long roomNo);
 }

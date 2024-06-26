@@ -14,15 +14,16 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     @Query(value = "from Room r where r.hostel.id=?1")
     Page<Room> findAllRoomsByHostelId(Long hostelId, Pageable pageable);
 
-    @Query(value = "select count(*) from Room where id=?1 and isActive=true", nativeQuery = true)
+    @Query(value = "select count(*) from room where id=?1 and isActive=true", nativeQuery = true)
     Number activeTenantCountByRoomId(Long roomId);
 
-    @Query(value = "select distinct r.id from Room r where r.hostel_id=?1", nativeQuery = true)
+    @Query(value = "select distinct r.id from room r where r.hostel_id=?1", nativeQuery = true)
     List<Long> findAllRoomIdsByHostelId(Long hostelId);
 
     @Query(value = """
-            select * from Room r where r.hostel_id in (
-            select h.id from Hostel h where h.owner_id=?1 and is_active=true
-            ) order by r.floor_no""", nativeQuery = true)
+            select * from room r where r.hostel_id in (\s
+            select h.id from hostel h where h.owner_id=?1 and is_active=true\s
+            ) order by r.floor_no\s
+            """, nativeQuery = true)
     Page<Room> findAllRoomsIdByUserId(Long userId, Pageable pageable);
 }

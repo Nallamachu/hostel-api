@@ -19,9 +19,9 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     List<Expense> findAllExpensesByHostelIdAndTimePeriod(Long hostelId, LocalDate startDate, LocalDate endDate, Pageable pageable);
 
     @Query(value = """
-    select * from Expense e where e.hostel_id in (
-    select h.id from hostel h where h.owner_id = ?1) 
-    and e.date between ?2 and ?3
+    select * from expense e where e.hostel_id in (\s
+    select h.id from hostel h where h.owner_id = ?1)\s
+    and e.date between ?2 and ?3\s
     """, nativeQuery = true)
     List<Expense> findAllExpensesByUserIdAndTimePeriod(Long userId, LocalDate startDate, LocalDate endDate);
 
