@@ -128,4 +128,17 @@ public class TenantController {
         }
         return tenantService.deleteTenantById(id, response);
     }
+
+    @GetMapping(path = "/tenants-count-by-room-id", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response<Number> getAllActiveTenantsByRoomId(@RequestParam(required = true) Long roomId) {
+        LOGGER.info("Start of getAllActiveTenantsByRoomId"+ roomId);
+        Response<Number> response = new Response<>();
+        if (roomId <= 0) {
+            response.setErrors(List.of(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID)));
+            return response;
+        }
+
+        LOGGER.info("Calling service of getAllActiveTenantsByRoomId");
+        return tenantService.getActiveTenantsCountByRoomId(roomId, response);
+    }
 }

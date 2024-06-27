@@ -209,4 +209,14 @@ public class TenantService {
         }
         return response;
     }
+
+    public Response<Number> getActiveTenantsCountByRoomId(Long roomId, Response response){
+        try {
+            Number count = tenantRepository.activeTenantCountByRoomId(roomId);
+            response.setData(count);
+        }catch (RuntimeException ex){
+            response.setErrors(Arrays.asList(new Error("INVALID_INPUT_ID", ErrorConstants.INVALID_INPUT_ID)));
+        }
+        return response;
+    }
 }

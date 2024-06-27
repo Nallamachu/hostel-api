@@ -17,10 +17,10 @@ public interface TenantRepository extends JpaRepository<Tenant, Long> {
     @Query(value = "from Tenant t where t.idNumber = ?1")
     Page<Tenant> findAllTenantsByGivenIdNumber(String idNumber, Pageable pageable);
 
-    @Query(value = "select count(*) from Tenant t where t.room_id=?1 and t.is_active=true", nativeQuery = true)
+    @Query(value = "select count(*) from tenant t where t.room_id=?1 and t.is_active=true", nativeQuery = true)
     Number activeTenantCountByRoomId(Long roomId);
 
-    @Query(value = "select * from Tenant t where t.room_id = ?1 and t.is_active=true", nativeQuery = true)
+    @Query(value = "select * from tenant t where t.room_id = ?1 and t.is_active=true", nativeQuery = true)
     List<Tenant> findAllTenantsByRoomId(Long roomId);
 
     @Query(value = """
