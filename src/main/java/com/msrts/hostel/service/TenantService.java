@@ -137,14 +137,19 @@ public class TenantService {
 
     public Response<TenantDto> modifyTenant(Long id, TenantDto tenantDto, Response<TenantDto> response) {
         try {
-            Optional<Tenant> optionalTenant = tenantRepository.findById(id);
-            if (optionalTenant.isPresent()) {
-                Tenant tenant = getTenant(tenantDto, optionalTenant.get());
-                tenant = tenantRepository.save(tenant);
-                tenantDto = objectMapper.convertValue(tenant, TenantDto.class);
-                response.setData(tenantDto);
+            Number activeTenantsCount = tenantRepository.activeTenantCountByRoomId(tenantDto.getRoom().getId());
+            if (activeTenantsCount != null && tenantDto.getRoom().getCapacity() > activeTenantsCount.longValue()) {
+                Optional<Tenant> optionalTenant = tenantRepository.findById(id);
+                if (optionalTenant.isPresent()) {
+                    Tenant tenant = getTenant(tenantDto, optionalTenant.get());
+                    tenant = tenantRepository.save(tenant);
+                    tenantDto = objectMapper.convertValue(tenant, TenantDto.class);
+                    response.setData(tenantDto);
+                } else {
+                    response.setErrors(List.of(new Error("ERROR_TENANT_NOT_FOUND", ErrorConstants.ERROR_TENANT_NOT_FOUND)));
+                }
             } else {
-                response.setErrors(List.of(new Error("ERROR_TENANT_NOT_FOUND", ErrorConstants.ERROR_TENANT_NOT_FOUND)));
+                response.setErrors(List.of(new Error("ERROR_ROOM_IS_FULL", ErrorConstants.ERROR_ROOM_IS_FULL)));
             }
         } catch (RuntimeException ex) {
             response.setErrors(Arrays.asList(new Error("RUNTIME_EXCEPTION", ex.getMessage())));

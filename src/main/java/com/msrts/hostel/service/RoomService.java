@@ -97,7 +97,7 @@ public class RoomService {
                 room.setRoomNo(roomDto.getRoomNo());
                 room.setCapacity(roomDto.getCapacity());
                 room.setFloorNo(roomDto.getFloorNo());
-                room.setTenants(getTenantsSet(roomDto.getTenants()));
+                //room.setTenants(getTenantsSet(roomDto.getTenants()));
                 room.setHostel(new Hostel(roomDto.getHostel().getId()));
                 room = roomRepository.save(room);
                 roomDto = objectMapper.convertValue(room, RoomDto.class);
