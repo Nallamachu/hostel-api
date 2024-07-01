@@ -75,6 +75,7 @@ public class AuthenticationService {
                 .build();
 
         var savedUser = userRepository.save(user);
+        updateReferredUserCoins(user.getReferredByCode());
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);
@@ -82,6 +83,14 @@ public class AuthenticationService {
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    private void updateReferredUserCoins(String referredByCode) {
+        User referredUser = userRepository.findByReferralCode(referredByCode);
+        if(referredUser != null) {
+            referredUser.setPoints(referredUser.getPoints() + 50);
+            userRepository.save(referredUser);
+        }
     }
 
     private String generateSequence(RegisterRequest user, Long currentSequence) {

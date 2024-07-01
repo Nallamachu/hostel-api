@@ -47,7 +47,7 @@ public class User implements UserDetails {
 
     @OneToOne(
             orphanRemoval = true,
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
+            cascade = {CascadeType.ALL}
     )
     private Address address;
 
