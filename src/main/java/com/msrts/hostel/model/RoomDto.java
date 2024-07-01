@@ -1,6 +1,5 @@
 package com.msrts.hostel.model;
 
-import com.msrts.hostel.entity.Tenant;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
